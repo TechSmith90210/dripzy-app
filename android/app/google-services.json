@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "919389122373",
+    "project_id": "dripzy-b92cc",
+    "storage_bucket": "dripzy-b92cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919389122373:android:b62c77361d91df118bd82c",
+        "android_client_info": {
+          "package_name": "com.dripzy.app.dripzy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQSBTSRersUsHz5w5O2JydVEe1YhHNMhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
