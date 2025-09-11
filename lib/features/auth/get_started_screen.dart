@@ -41,7 +41,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               children: [
                 SizedBox.expand(
                   child: FittedBox(
-                    fit: BoxFit.cover, // cover the screen, crop if needed
+                    fit: BoxFit.cover,
                     child: SizedBox(
                       width: _playerController!.value.size.width,
                       height: _playerController!.value.size.height,
@@ -52,6 +52,17 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                 Positioned.fill(
                   child: Container(
                     color: LightColors.background.withValues(alpha: 0.5),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "DRIPZY",
+                    style: TextStyle(
+                        color: LightColors.onBackground,
+                        fontSize: 23,
+                        fontWeight: FontWeight.w100,
+                        letterSpacing: 10),
                   ),
                 ),
                 SafeArea(
@@ -72,10 +83,18 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
                             onPressed: () {},
-                            child: const Text(
-                              'Get Started',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              spacing: 8,
+                              children: [
+                                const Text(
+                                  'Get Started',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Icon(Icons.arrow_forward)
+                              ],
                             ),
                           ),
                         ),

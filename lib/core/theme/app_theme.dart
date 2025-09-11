@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppThemes {
@@ -26,6 +27,7 @@ class AppThemes {
       backgroundColor: LightColors.accent,
       foregroundColor: LightColors.onAccent,
     ),
+    textTheme: GoogleFonts.dmSansTextTheme()
   );
 
   // --- Dark Theme ---
@@ -52,6 +54,7 @@ class AppThemes {
       backgroundColor: DarkColors.accent,
       foregroundColor: DarkColors.onAccent,
     ),
+      textTheme: GoogleFonts.dmSansTextTheme()
   );
 
   // --- Private helpers ---

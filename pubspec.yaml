@@ -40,6 +40,7 @@ dependencies:
   cloud_firestore:
   go_router:
   video_player: ^2.10.0
+  google_fonts: ^6.3.0
 
 dev_dependencies:
   flutter_test:

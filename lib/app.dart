@@ -1,4 +1,5 @@
 import 'package:dripzy/core/router/app_router.dart';
+import 'package:dripzy/core/theme/app_theme.dart';
 import 'package:dripzy/features/splash/presentation/bloc/splash_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,9 @@ class DripzyApp extends StatelessWidget {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             routerConfig: appRouter,
+            theme: AppThemes.lightTheme,
+            darkTheme: AppThemes.darkTheme,
+            themeMode: ThemeMode.system,
           );
         }
       ),
