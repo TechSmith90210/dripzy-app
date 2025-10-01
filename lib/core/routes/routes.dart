@@ -1,6 +1,17 @@
 class AppRoutes {
+  // paths
   static const String splash = '/splash';
   static const String home = '/home';
   static const String login = '/login';
   static const String getStarted = '/getStarted';
+  static const String verifyOTP = '/verifyOTP';
+  static const String register = '/register';
+
+  // names
+  static const String splashName = 'splash';
+  static const String homeName = 'home';
+  static const String loginName = 'login';
+  static const String getStartedName = 'getStarted';
+  static const String verifyOTPName = 'verifyOTP';
+  static const String registerName = 'register';
 }

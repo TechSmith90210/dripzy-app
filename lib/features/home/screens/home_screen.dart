@@ -5,9 +5,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final color = Theme.of(context).colorScheme;
+    return Scaffold(
       body: Center(
-        child: Text('Welcome to Home'),
+        child: Text('Welcome to Home', style: TextStyle(color: color.primary)),
       ),
     );
   }
