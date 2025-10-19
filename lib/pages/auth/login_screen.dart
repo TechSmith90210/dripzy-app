@@ -1,7 +1,5 @@
-import 'package:dripzy/core/routes/routes.dart';
-import 'package:dripzy/features/auth/bloc/auth_bloc.dart';
-import 'package:dripzy/features/auth/bloc/auth_event.dart';
-import 'package:dripzy/features/auth/bloc/auth_state.dart';
+import 'package:dripzy/core/router/routes.dart';
+import 'package:dripzy/blocs/auth/auth_bloc.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:dripzy/widgets/custom_button_1.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
-import '../../../widgets/customIconTextField.dart';
+import '../../blocs/auth/auth_event.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../widgets/customIconTextField.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.onBack});

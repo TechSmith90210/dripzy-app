@@ -1,12 +1,12 @@
-import 'package:dripzy/features/auth/screens/register_screen.dart';
+import 'package:dripzy/pages/auth/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/screens/get_started_screen.dart';
-import '../../features/auth/screens/login_screen.dart';
-import '../../features/home/screens/home_screen.dart';
-import '../../features/splash/presentation/screens/splash_screen.dart';
-import '../routes/routes.dart';
+import '../../pages/auth/get_started_screen.dart';
+import '../../pages/auth/login_screen.dart';
+import '../../pages/home/home_screen.dart';
+import '../../pages/splash/splash_screen.dart';
+import 'routes.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

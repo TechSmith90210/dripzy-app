@@ -1,10 +1,9 @@
-import 'package:dripzy/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/routes/routes.dart';
-import '../../../widgets/custom_icon_button.dart';
+import '../../core/router/routes.dart';
+import '../../widgets/custom_icon_button.dart';
 
 class GetStartedScreen extends StatefulWidget {
   const GetStartedScreen({super.key});

@@ -1,10 +1,11 @@
+import 'package:dripzy/blocs/splash/splash_state.dart';
 import 'package:dripzy/core/router/app_router.dart';
-import 'package:dripzy/features/auth/bloc/auth_event.dart';
-import 'package:dripzy/features/splash/presentation/cubit/splash_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../auth/bloc/auth_bloc.dart';
+import '../auth/auth_bloc.dart';
+import '../auth/auth_event.dart';
+
 
 class SplashCubit extends Cubit<SplashState> {
   SplashCubit() : super(DisplaySplash());

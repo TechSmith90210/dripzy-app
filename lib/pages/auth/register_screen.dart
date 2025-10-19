@@ -1,5 +1,4 @@
-import 'package:dripzy/core/routes/routes.dart';
-import 'package:dripzy/features/auth/bloc/auth_state.dart';
+import 'package:dripzy/core/router/routes.dart';
 import 'package:dripzy/widgets/customIconTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,10 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../../widgets/custom_alert.dart';
-import '../../../widgets/custom_button_1.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
+import '../../blocs/auth/auth_event.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../widgets/custom_alert.dart';
+import '../../widgets/custom_button_1.dart';
+import '../../blocs/auth/auth_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key, required this.onBack});

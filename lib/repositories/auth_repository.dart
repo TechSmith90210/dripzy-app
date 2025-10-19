@@ -1,5 +1,5 @@
-import 'package:dripzy/features/auth/models/user_model.dart';
-import 'package:dripzy/features/auth/services/auth_service.dart';
+import 'package:dripzy/models/user_model.dart';
+import 'package:dripzy/services/auth_service.dart';
 
 class AuthRepository {
   final AuthService _authService = AuthService();

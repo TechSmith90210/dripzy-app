@@ -1,10 +1,8 @@
-import 'package:dripzy/features/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../../widgets/custom_button_1.dart';
+import '../../widgets/custom_button_1.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
   const VerifyOtpScreen({

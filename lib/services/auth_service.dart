@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:dripzy/features/auth/models/user_model.dart';
+import 'package:dripzy/models/user_model.dart';
 
-import '../../../constants.dart';
+import '../core/api/api_constants.dart';
 
 class AuthService {
   final Dio dio = Dio();

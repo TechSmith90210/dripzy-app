@@ -9,4 +9,8 @@ class ApiConstants {
   static const String authRegister = "/auth/register";
   static const String authLogin = "/auth/login";
   static const String getUserData = "/auth/me";
+
+  //product routes
+  static const String getAllProducts = "/products/list";
+  static String getProductById(String id) => "/products/$id";
 }

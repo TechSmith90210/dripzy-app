@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/routes/routes.dart';
-import '../cubit/splash_cubit.dart';
-import '../cubit/splash_state.dart';
-import '../../../auth/bloc/auth_bloc.dart';
-import '../../../auth/bloc/auth_state.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../blocs/splash/splash_cubit.dart';
+import '../../blocs/splash/splash_state.dart';
+import '../../core/router/routes.dart';
+import '../../blocs/auth/auth_bloc.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
