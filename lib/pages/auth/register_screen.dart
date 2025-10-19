@@ -91,6 +91,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final theme = Theme.of(context);
     final color = theme.colorScheme;
     final height = MediaQuery.of(context).size.height;
+    final isSmallScreen = MediaQuery.of(context).size.height < 700;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -108,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/verify_otp_img.png'),
+                image: AssetImage('assets/register_image.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -117,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             alignment: Alignment.bottomCenter,
             child: Container(
               padding: EdgeInsets.all(20),
-              height: height / 2,
+              // height: isSmallScreen ? height/2 : height / 1.8,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: color.surface,
@@ -126,109 +128,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   topRight: Radius.circular(24),
                 ),
               ),
-              child: Column(
-                spacing: 20,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    spacing: 10,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //title
-                      Text(
-                        "Register",
-                        style: TextStyle(
-                          color: color.primary,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 27,
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  spacing: isSmallScreen ? 12 : 20,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      spacing: 10,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //title
+                        Text(
+                          "Register",
+                          style: TextStyle(
+                            color: color.primary,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 27,
+                          ),
                         ),
-                      ),
-                      //subtitle
-                      Text(
-                        "Create Your Account",
-                        style: TextStyle(
-                          color: color.primary,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
+                        //subtitle
+                        Text(
+                          "Create Your Account",
+                          style: TextStyle(
+                            color: color.primary,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
-                  //text fields
-                  //name text field
-                  CustomIconTextField(
-                    color: color,
-                    controller: nameController,
-                    icon: IconsaxPlusLinear.profile,
-                    hintText: "Enter your name",
-                  ),
+                    //text fields
+                    //name text field
+                    CustomIconTextField(
+                      color: color,
+                      controller: nameController,
+                      icon: IconsaxPlusLinear.profile,
+                      hintText: "Enter your name",
+                    ),
 
-                  // email text field
-                  CustomIconTextField(
-                    color: color,
-                    controller: emailController,
-                    icon: Icons.email_outlined,
-                    hintText: "Enter your email",
-                    isEmail: true,
-                  ),
+                    // email text field
+                    CustomIconTextField(
+                      color: color,
+                      controller: emailController,
+                      icon: Icons.email_outlined,
+                      hintText: "Enter your email",
+                      isEmail: true,
+                    ),
 
-                  // password field
-                  CustomIconTextField(
-                    color: color,
-                    controller: passwordController,
-                    icon: Icons.password_outlined,
-                    hintText: "Enter your password",
-                    isPassword: true,
-                    obscureText: _obscurePassword,
-                    onToggleObscure: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                    showSuffixIcon: true,
-                  ),
+                    // password field
+                    CustomIconTextField(
+                      color: color,
+                      controller: passwordController,
+                      icon: Icons.password_outlined,
+                      hintText: "Enter your password",
+                      isPassword: true,
+                      obscureText: _obscurePassword,
+                      onToggleObscure: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                      showSuffixIcon: true,
+                    ),
 
-                  //confirm password field
-                  CustomIconTextField(
-                    color: color,
-                    controller: confirmPasswordController,
-                    icon: Icons.lock_outline,
-                    hintText: "Confirm Password",
-                    isPassword: true,
-                    obscureText: true,
-                  ),
+                    //confirm password field
+                    CustomIconTextField(
+                      color: color,
+                      controller: confirmPasswordController,
+                      icon: Icons.lock_outline,
+                      hintText: "Confirm Password",
+                      isPassword: true,
+                      obscureText: true,
+                    ),
 
-                  BlocConsumer<AuthBloc, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthFailure) {
-                        CustomAlert.show(
-                          context,
-                          message: state.message,
-                          type: ToastificationType.error,
+                    BlocConsumer<AuthBloc, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthFailure) {
+                          CustomAlert.show(
+                            context,
+                            message: state.message,
+                            type: ToastificationType.error,
+                          );
+                        } else if (state is AuthSuccess) {
+                          CustomAlert.show(
+                            context,
+                            message: state.message,
+                            type: ToastificationType.success,
+                          );
+                          //navigate to home screen
+                          context.goNamed(AppRoutes.homeName);
+                        }
+                      },
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return CustomButton1(
+                          bgColor: color.primary,
+                          text: isLoading ? "Registering..." : "Register",
+                          onTap:
+                              () => isLoading ? null : onRegisterTap(context),
                         );
-                      } else if (state is AuthSuccess) {
-                        CustomAlert.show(
-                          context,
-                          message: state.message,
-                          type: ToastificationType.success,
-                        );
-                        //navigate to home screen
-                        context.goNamed(AppRoutes.homeName);
-                      }
-                    },
-                    builder: (context, state) {
-                      final isLoading = state is AuthLoading;
-                      return CustomButton1(
-                        bgColor: color.primary,
-                        text: isLoading ? "Registering..." : "Register",
-                        onTap: () => isLoading ? null : onRegisterTap(context),
-                      );
-                    },
-                  ),
-                ],
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

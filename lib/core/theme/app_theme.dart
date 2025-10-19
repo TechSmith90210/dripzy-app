@@ -29,7 +29,9 @@ class AppThemes {
       backgroundColor: LightColors.accent,
       foregroundColor: LightColors.onAccent,
     ),
-    textTheme: GoogleFonts.dmSansTextTheme()
+    textTheme: GoogleFonts.dmSansTextTheme(
+      ThemeData.light().textTheme
+    )
   );
 
   // --- Dark Theme ---

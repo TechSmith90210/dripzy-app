@@ -1,3 +1,4 @@
+import 'package:dripzy/blocs/home/home_bloc.dart';
 import 'package:dripzy/core/router/app_router.dart';
 import 'package:dripzy/core/theme/app_theme.dart';
 import 'package:dripzy/blocs/auth/auth_bloc.dart';
@@ -22,6 +23,7 @@ class DripzyApp extends StatelessWidget {
             create: (context) => SplashCubit()..appStart(),
           ),
           BlocProvider<AuthBloc>(create: (context) => AuthBloc()),
+          BlocProvider<HomeBloc>(create: (context) => HomeBloc(),)
         ],
         child: Builder(
           builder: (context) {
