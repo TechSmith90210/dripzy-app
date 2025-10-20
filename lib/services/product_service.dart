@@ -44,7 +44,8 @@ class ProductService {
         options: Options(headers: {'access-token': accessToken}),
       );
       if (response.statusCode == 200) {
-        return Product.fromJson(response.data);
+        final productData = response.data['product'];
+        return Product.fromJson(productData);
       }
       throw Exception(
         'Failed to fetch product, status: ${response.statusCode}',

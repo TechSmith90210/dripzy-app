@@ -10,9 +10,11 @@ import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository _authRepo = AuthRepository();
+  final AuthRepository _authRepo;
 
-  AuthBloc() : super(AuthInitial()) {
+  AuthBloc({required AuthRepository repository})
+    : _authRepo = repository,
+      super(AuthInitial()) {
     // Event handlers at the top
     on<RegisterRequested>(_handleRegister);
     on<LoginRequested>(_handleLogin);
@@ -21,7 +23,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   // ---------------- Private Methods ----------------
 
-  Future<void> _handleRegister(RegisterRequested event, Emitter<AuthState> emit) async {
+  Future<void> _handleRegister(
+    RegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
       final response = await _authRepo.registerUser(
@@ -42,7 +47,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handleLogin(LoginRequested event, Emitter<AuthState> emit) async {
+  Future<void> _handleLogin(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
       final response = await _authRepo.loginUser(
@@ -67,7 +75,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _handleGetUserData(UserDataRequested event, Emitter<AuthState> emit) async {
+  Future<void> _handleGetUserData(
+    UserDataRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
       final response = await _authRepo.getUserData(

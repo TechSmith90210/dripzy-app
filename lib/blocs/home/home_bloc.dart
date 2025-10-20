@@ -4,9 +4,9 @@ import 'package:dripzy/repositories/product_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final ProductRepository _productRepository = ProductRepository();
+  final ProductRepository _productRepository;
 
-  HomeBloc() : super(HomeInitial()) {
+  HomeBloc({required ProductRepository repository}) : _productRepository = repository, super(HomeInitial()) {
     on<LoadProducts>(_loadProducts);
   }
 
@@ -16,7 +16,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     result.when(
       success: (data) => emit(HomeLoaded(products: data)),
-      failure: (error) => HomeError(error: error),
+      failure: (error) => emit(HomeError(error: error)),
     );
   }
 }

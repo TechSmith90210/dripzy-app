@@ -1,8 +1,11 @@
 import 'package:dripzy/blocs/home/home_bloc.dart';
+import 'package:dripzy/blocs/product/product_bloc.dart';
 import 'package:dripzy/core/router/app_router.dart';
 import 'package:dripzy/core/theme/app_theme.dart';
 import 'package:dripzy/blocs/auth/auth_bloc.dart';
 import 'package:dripzy/providers/auth_provider.dart';
+import 'package:dripzy/repositories/auth_repository.dart';
+import 'package:dripzy/repositories/product_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +25,9 @@ class DripzyApp extends StatelessWidget {
           BlocProvider<SplashCubit>(
             create: (context) => SplashCubit()..appStart(),
           ),
-          BlocProvider<AuthBloc>(create: (context) => AuthBloc()),
-          BlocProvider<HomeBloc>(create: (context) => HomeBloc(),)
+          BlocProvider<AuthBloc>(create: (context) => AuthBloc(repository: AuthRepository())),
+          BlocProvider<HomeBloc>(create: (context) => HomeBloc(repository: ProductRepository()),),
+          BlocProvider<ProductBloc>(create: (context) =>  ProductBloc(repository: ProductRepository()),)
         ],
         child: Builder(
           builder: (context) {

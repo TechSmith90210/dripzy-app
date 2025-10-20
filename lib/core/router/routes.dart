@@ -6,6 +6,7 @@ class AppRoutes {
   static const String getStarted = '/getStarted';
   static const String verifyOTP = '/verifyOTP';
   static const String register = '/register';
+  static const String productPage = '/productPage';
 
   // names
   static const String splashName = 'splash';
@@ -14,4 +15,5 @@ class AppRoutes {
   static const String getStartedName = 'getStarted';
   static const String verifyOTPName = 'verifyOTP';
   static const String registerName = 'register';
+  static const String productPageName = 'productPage';
 }

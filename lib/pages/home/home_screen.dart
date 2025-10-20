@@ -1,9 +1,11 @@
 import 'package:dripzy/blocs/home/home_event.dart';
+import 'package:dripzy/core/router/routes.dart';
 import 'package:dripzy/pages/home/widgets/productCard.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -80,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0,
                         height: 0.9,
+                        color: color.primary,
                       ),
                     ),
                   ),
@@ -91,10 +94,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     childCount: state.products.length,
                     crossAxisCount: 2,
                     crossAxisSpacing: 5,
-                    mainAxisSpacing: 3,
+                    mainAxisSpacing: 5,
                     itemBuilder: (context, index) {
                       final product = state.products[index];
-                      return ProductCard(product: product);
+                      return ProductCard(
+                        product: product,
+                        onTap: () {
+                          context.push(
+                            AppRoutes.productPage,
+                            extra: product.id,
+                          );
+                        },
+                      );
                     },
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:dripzy/pages/auth/register_screen.dart';
+import 'package:dripzy/pages/product/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -74,6 +75,15 @@ final appRouter = GoRouter(
             },
           ),
     ),
+
+    GoRoute(path: AppRoutes.productPage, name: AppRoutes.productPageName,
+      builder: (context, state) {
+      final extra = state.extra;
+      final productId = extra as String;
+        return ProductScreen(productId: productId);
+      },
+
+    )
   ],
   errorBuilder:
       (context, state) =>
