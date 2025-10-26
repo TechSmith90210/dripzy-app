@@ -1,14 +1,20 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dripzy/blocs/cart/cart_event.dart';
+import 'package:dripzy/blocs/cart/cart_state.dart';
 import 'package:dripzy/blocs/product/product_bloc.dart';
 import 'package:dripzy/blocs/product/product_event.dart';
 import 'package:dripzy/blocs/product/product_state.dart';
 import 'package:dripzy/widgets/customCircleButton.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:dripzy/widgets/custom_button_1.dart';
+import 'package:dripzy/widgets/custom_icon_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../blocs/cart/cart_bloc.dart';
 
 class ProductScreen extends StatefulWidget {
   final String productId;
@@ -21,13 +27,29 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   List<String> predefinedSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   int _currentImageIndex = 0;
+  String? selectedSize;
+
+  late final CartBloc _cartBloc;
 
   @override
   void initState() {
     context.read<ProductBloc>().add(
       LoadSingleProduct(productId: widget.productId),
     );
+
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _cartBloc = context.read<CartBloc>();
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _cartBloc.add(ClearCartItemState());
+    super.dispose();
   }
 
   @override
@@ -93,7 +115,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                     _currentImageIndex = index;
                                   });
                                 },
-                                scrollPhysics: BouncingScrollPhysics()
+                                scrollPhysics: BouncingScrollPhysics(),
                               ),
                               items:
                                   product.images
@@ -173,7 +195,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
 
-                    SliverToBoxAdapter(child: SizedBox(height: 5,),),
+                    SliverToBoxAdapter(child: SizedBox(height: 5)),
 
                     SliverPadding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -214,24 +236,18 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 8)),
-                    BlocSelector<ProductBloc, ProductState, String>(
-                      selector: (state) {
-                        if (state is ProductLoaded)
-                          return state.selectedSize ?? '';
-                        return '';
-                      },
-                      builder: (context, state) {
-                        return _buildSizesRow(
-                          sizes: product.sizes,
-                          color: color,
-                          onTapSize: (selectedSize) {
-                            context.read<ProductBloc>().add(
-                              SelectProductSize(size: selectedSize),
-                            );
-                          },
-                          selectedSize: state,
+                    _buildSizesRow(
+                      sizes: product.sizes,
+                      color: color,
+                      onTapSize: (size) {
+                        setState(() {
+                          selectedSize = size;
+                        });
+                        context.read<CartBloc>().add(
+                          GetCartItem(productId: product.id, size: size),
                         );
                       },
+                      selectedSize: selectedSize,
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 13)),
 
@@ -273,26 +289,66 @@ class _ProductScreenState extends State<ProductScreen> {
                   left: 16,
                   right: 16,
                   bottom: 20,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: CustomButton1(
-                          bgColor: color.onPrimary,
-                          text: "Buy Now",
-                          onTap: () {},
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: CustomCircleButton(
-                          size: 40,
-                          bgColor: color.tertiary,
-                          icon: IconsaxPlusBroken.add,
-                          onTap: () {},
-                        ),
-                      ),
-                    ],
+                  child: BlocConsumer<CartBloc, CartState>(
+                    listener: (context, state) {
+                      if (state is CartItemQuantityState &&
+                          state.message.isNotEmpty) {
+                        // Show alert/toast when item is added
+                        CustomAlert.show(context, message: state.message);
+                      }
+                      if (state is CartError) {
+                        CustomAlert.show(context, message: state.message);
+                      }
+                    },
+                    builder: (context, state) {
+                      // Default empty map
+                      Map<String, int> sizeQuantityMap = {};
+                      if (state is CartItemQuantityState) {
+                        sizeQuantityMap = state.sizeQuantityMap;
+                      }
+                      final quantity =
+                          (selectedSize != null &&
+                                  sizeQuantityMap.containsKey(selectedSize))
+                              ? sizeQuantityMap[selectedSize]!
+                              : 0;
+
+                      print("quantity for size $selectedSize → $quantity");
+
+                      if (quantity > 0) {
+                        return _buildQuantityButton(
+                          color: color,
+                          selectedSize: selectedSize!,
+                          quantity: quantity,
+                          onTapPlus: () {
+                            context.read<CartBloc>().add(
+                              UpdateCartItemQuantity(
+                                productId: product.id,
+                                size: selectedSize!,
+                                quantity: quantity + 1,
+                              ),
+                            );
+                          },
+                          onTapMinus: () {
+                            if (quantity >= 0) {
+                              context.read<CartBloc>().add(
+                                UpdateCartItemQuantity(
+                                  productId: product.id,
+                                  size: selectedSize!,
+                                  quantity: quantity - 1,
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+
+                      return _buildInitialButtons(
+                        color: color,
+                        productId: product.id,
+                        size: selectedSize,
+                        price: product.price,
+                      );
+                    },
                   ),
                 ),
               ],
@@ -308,7 +364,7 @@ class _ProductScreenState extends State<ProductScreen> {
     required List<String> sizes,
     required ColorScheme color,
     required Function(String) onTapSize,
-    required String selectedSize,
+    required String? selectedSize,
   }) {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -356,6 +412,127 @@ class _ProductScreenState extends State<ProductScreen> {
               }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget _buildInitialButtons({
+    required ColorScheme color,
+    required String? productId,
+    required String? size,
+    required double price,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 5,
+          child: CustomButton1(
+            bgColor: color.onPrimary,
+            text: "Buy Now",
+            onTap: () {
+              // Check size and dispatch BuyNow event
+              if (selectedSize == null || size!.isEmpty) {
+                CustomAlert.show(
+                  context,
+                  message: "Please select a size first.",
+                );
+                return;
+              }
+              // context.read<CartBloc>().add(
+              //   BuyNow(productId: productId!, size: selectedSize!),
+              // );
+            },
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: CustomCircleButton(
+            size: 40,
+            bgColor: color.tertiary,
+            icon: IconsaxPlusBroken.add,
+            onTap: () {
+              // Check size and dispatch AddItemToCart event
+              if (size == null || size.isEmpty) {
+                CustomAlert.show(
+                  context,
+                  message: "Please select a size first.",
+                );
+                return;
+              }
+              context.read<CartBloc>().add(
+                CartItemAdded(productId: productId!, size: size),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuantityButton({
+    required ColorScheme color,
+    required String selectedSize,
+    required int quantity,
+    required VoidCallback onTapPlus,
+    required VoidCallback onTapMinus,
+  }) {
+    return Row(
+      spacing: 8,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Minus Button
+        Expanded(
+          flex: 2,
+          child: CustomIconButton2(
+            icon: IconsaxPlusBroken.minus,
+            onPressed: onTapMinus,
+            bgColor: color.surface,
+            fgColor: color.primary,
+          ),
+        ),
+
+        Expanded(
+          flex: 3,
+          child: Container(
+            // Adjusted padding for a taller, more defined look
+            padding: const EdgeInsets.symmetric(vertical: 6),
+
+            decoration: BoxDecoration(
+              // Use a darker background for better visibility, e.g., tertiary or a soft contrast
+              color: color.onPrimary.withValues(
+                alpha: 0.7,
+              ), // Soft, visible background
+              borderRadius: BorderRadius.circular(16), // Increased roundness
+              border: Border.all(
+                color: color.primary.withOpacity(
+                  0.3,
+                ), // Light border for definition
+                width: 1,
+              ),
+            ),
+            child: Text(
+              quantity.toString(),
+              style: TextStyle(
+                fontSize: 18,
+                // Use a bold weight to make the number pop
+                fontWeight: FontWeight.w700,
+                color: color.primary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+
+        // Plus Button
+        Expanded(
+          flex: 2,
+          child: CustomIconButton2(
+            icon: IconsaxPlusBroken.add,
+            onPressed: onTapPlus,
+            // Use an accent color for the main action button (Add/Plus)
+            bgColor: color.tertiary,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -13,4 +13,12 @@ class ApiConstants {
   //product routes
   static const String getAllProducts = "/products/list";
   static String getProductById(String id) => "/products/$id";
+
+  //cart routes
+  static const String getCart = "/cart/getCart";
+  static const String getCartItem = "/cart/getCartItem";
+  static const String addCartItem = "/cart/addItem";
+  static const String updateCartItem = "/cart/updateItem";
+  static const String deleteCartItem = "/cart/removeItem";
+  static const String clearCart = "/cart/clearCart";
 }

@@ -10,7 +10,7 @@ class CustomAlert {
   }) {
     final color = Theme.of(context).colorScheme;
     toastification.show(
-      animationDuration: Duration(milliseconds: 150),
+      animationDuration: Duration(milliseconds: 180),
       context: context,
       title: Text(message),
       type: type,

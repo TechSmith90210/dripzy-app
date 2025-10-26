@@ -9,7 +9,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     : _productRepository = repository,
       super(ProductInitial()) {
     on<LoadSingleProduct>(_handleLoadSingleProduct);
-    on<SelectProductSize>(_handleSelectProductSize);
   }
 
   Future<void> _handleLoadSingleProduct(
@@ -25,20 +24,5 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       success: (data) => emit(ProductLoaded(product: data)),
       failure: (error) => emit(ProductError(message: error.toString())),
     );
-  }
-
-  void _handleSelectProductSize(
-    SelectProductSize event,
-    Emitter<ProductState> emit,
-  ) {
-    final state = this.state;
-
-    if (state is ProductLoaded) {
-      final newSelectedSize =
-          (state.selectedSize?.toUpperCase() == event.size.toUpperCase())
-              ? ""
-              : event.size;
-      emit(state.copyWith(selectedSize: newSelectedSize));
-    }
   }
 }
