@@ -1,67 +1,55 @@
 import 'package:dio/dio.dart';
 import 'package:dripzy/core/api/api_constants.dart';
+import 'package:dripzy/core/api/global_api_client.dart';
 import 'package:dripzy/models/cart_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 class CartService {
-  final Dio _dio = Dio();
+  final Dio _dio = ApiClient().dio;
 
-  Map<String, dynamic> _headers({required String accessToken}) {
-    return {'access-token': accessToken};
-  }
-
-  Future<Cart> getCart({required String accessToken}) async {
+  // ---------------- GET CART ----------------
+  Future<Cart> getCart() async {
     try {
-      final response = await _dio.get(
-        ApiConstants.baseUrl + ApiConstants.getCart,
-        options: Options(headers: _headers(accessToken: accessToken)),
-      );
-
-      final data = response.data;
-      return Cart.fromJson(data['cart']);
+      final response = await _dio.get(ApiConstants.getCart);
+      return Cart.fromJson(response.data['cart']);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        // User doesn't have a cart yet
-        return Cart.empty();
+        return Cart.empty(); // user has no cart yet
       }
-
-      throw Exception(e.response?.data['message'] ?? 'Failed to fetch cart');
+      throw Exception(e.response?.data?['message'] ?? 'Failed to fetch cart');
     }
   }
 
-  // get cart item quantity
+  // ---------------- GET CART ITEM QUANTITY ----------------
   Future<int> getCartItem({
-    required String accessToken,
     required String productId,
     required String size,
   }) async {
     if (size.isEmpty || productId.isEmpty) {
       throw Exception('Please select size and provide productId');
     }
+
     try {
       final response = await _dio.get(
-        ApiConstants.baseUrl + ApiConstants.getCartItem,
-        options: Options(headers: _headers(accessToken: accessToken)),
+        ApiConstants.getCartItem,
         queryParameters: {'productId': productId, 'size': size},
       );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data != null &&
-            data['success'] == true &&
-            data['quantity'] != null) {
-          return data['quantity'] as int;
-        }
+      final data = response.data;
+      if (data != null && data['success'] == true) {
+        return data['quantity'] as int;
       }
-      throw Exception(response.data['message']);
+
+      throw Exception(data['message']);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message']);
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to fetch cart item',
+      );
     }
   }
 
-  //add item to cart
+  // ---------------- ADD ITEM ----------------
   Future<void> addItemToCart({
-    required String accessToken,
     required String productId,
     required String size,
   }) async {
@@ -71,32 +59,22 @@ class CartService {
 
     try {
       final response = await _dio.post(
-        ApiConstants.baseUrl + ApiConstants.addCartItem,
-        options: Options(headers: _headers(accessToken: accessToken)),
+        ApiConstants.addCartItem,
         data: {'productId': productId, 'size': size},
       );
-      final data = response.data;
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (data != null && data['success'] == true) {
-          return;
-        }
+      if (response.data?['success'] != true) {
+        throw Exception(response.data?['message']);
       }
-      throw Exception(data['message']);
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'];
-
-      if (errorMessage != null && errorMessage.isNotEmpty) {
-        // Throw the specific message from the server response data (e.g., 'Item already in cart')
-        throw Exception(errorMessage);
-      }
-      final dioMessage = e.message;
-      throw Exception(dioMessage ?? 'An unknown network error occurred.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to add item to cart',
+      );
     }
   }
 
+  // ---------------- UPDATE ITEM ----------------
   Future<bool> updateCartItem({
-    required String accessToken,
     required String productId,
     required String size,
     required int quantity,
@@ -107,35 +85,23 @@ class CartService {
 
     try {
       final response = await _dio.patch(
-        ApiConstants.baseUrl + ApiConstants.updateCartItem,
-        options: Options(headers: _headers(accessToken: accessToken)),
+        ApiConstants.updateCartItem,
         data: {'productId': productId, 'size': size, 'quantity': quantity},
       );
 
-      final data = response.data;
-      print("updateItem response: $data");
-      if (response.statusCode == 200 &&
-          data != null &&
-          data['success'] == true) {
-        return true; // indicate success
-      } else {
-        final message =
-            data != null && data['message'] != null
-                ? data['message']
-                : 'Unknown error updating cart item';
-        throw Exception(message);
+      if (response.data?['success'] == true) {
+        return true;
       }
+      return false;
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'];
-      if (errorMessage != null && errorMessage.isNotEmpty) {
-        throw Exception(errorMessage);
-      }
-      throw Exception(e.message ?? 'An unknown network error occurred.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to update cart item',
+      );
     }
   }
 
+  // ---------------- REMOVE ITEM ----------------
   Future<bool> removeItemFromCart({
-    required String accessToken,
     required String productId,
     required String size,
   }) async {
@@ -145,26 +111,20 @@ class CartService {
 
     try {
       final response = await _dio.delete(
-        ApiConstants.baseUrl + ApiConstants.deleteCartItem,
-        options: Options(headers: _headers(accessToken: accessToken)),
+        ApiConstants.deleteCartItem,
         data: {'productId': productId, 'size': size},
       );
 
-      final data = response.data;
-      if (response.statusCode == 200 &&
-          data != null &&
-          data['success'] == true) {
-        debugPrint("[removeItemFromCart] Removed Item from Cart");
+      if (response.data?['success'] == true) {
         return true;
       }
-      debugPrint("Response code ${response.statusCode} - ${response.data}");
+
+      debugPrint('[CartService] Item removed');
       return false;
     } on DioException catch (e) {
-      final errorMessage = e.response?.data?['message'];
-      if (errorMessage != null && errorMessage.isNotEmpty) {
-        throw Exception(errorMessage);
-      }
-      throw Exception(e.message ?? 'An unknown network error occurred.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to remove item from cart',
+      );
     }
   }
 }

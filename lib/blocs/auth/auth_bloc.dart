@@ -1,3 +1,4 @@
+import 'package:dripzy/core/api/global_api_client.dart';
 import 'package:dripzy/core/router/app_router.dart';
 import 'package:dripzy/core/router/routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final cx = navigatorKey.currentContext!;
       cx.read<AuthProvider>().setUserData(response.user!);
 
+      //setting the access token for global api client
+      ApiClient().setAccessToken(response.token!);
       emit(AuthSuccess(message: "User registered successfully"));
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
@@ -69,6 +72,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final cx = navigatorKey.currentContext!;
       cx.read<AuthProvider>().setUserData(response.user!);
 
+      //setting the access token for global api client
+      ApiClient().setAccessToken(response.token!);
       emit(AuthSuccess(message: "User logged in successfully"));
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
@@ -96,6 +101,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       cx.read<AuthProvider>().setUserData(user);
+      ApiClient().setAccessToken(event.authToken);
       emit(AuthSuccess(message: "Got user data successfully"));
     } catch (e) {
       emit(AuthFailure(message: e.toString()));

@@ -7,12 +7,8 @@ class CartRepository {
   final _cartService = CartService();
 
   Future<Result<Cart>> getCart() async {
-    final accessToken = await AuthStorage.getAccessToken();
-    if (accessToken == null) {
-      return Result.failure('Access token not found');
-    }
     try {
-      final result = await _cartService.getCart(accessToken: accessToken);
+      final result = await _cartService.getCart();
       return Result.success(result);
     } catch (e) {
       return Result.failure(e.toString());
@@ -29,7 +25,6 @@ class CartRepository {
     }
     try {
       final result = await _cartService.getCartItem(
-        accessToken: accessToken,
         productId: productId,
         size: size,
       );
@@ -43,14 +38,8 @@ class CartRepository {
     required String productId,
     required String size,
   }) async {
-    final accessToken = await AuthStorage.getAccessToken();
-    if (accessToken == null) {
-      return Result.failure('Access token not found');
-    }
-
     try {
       final result = await _cartService.addItemToCart(
-        accessToken: accessToken,
         productId: productId,
         size: size,
       );
@@ -65,14 +54,8 @@ class CartRepository {
     required String size,
     required int quantity,
   }) async {
-    final accessToken = await AuthStorage.getAccessToken();
-    if (accessToken == null) {
-      return Result.failure('Access token not found');
-    }
-
     try {
       final success = await _cartService.updateCartItem(
-        accessToken: accessToken,
         productId: productId,
         size: size,
         quantity: quantity,
@@ -88,14 +71,8 @@ class CartRepository {
     required String productId,
     required String size,
   }) async {
-    final accessToken = await AuthStorage.getAccessToken();
-    if (accessToken == null) {
-      return Result.failure('Access token not found');
-    }
-
     try {
       final success = await _cartService.removeItemFromCart(
-        accessToken: accessToken,
         productId: productId,
         size: size,
       );

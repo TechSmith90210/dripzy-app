@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../blocs/cart/cart_bloc.dart';
-import '../../widgets/custom_icon_button2.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
