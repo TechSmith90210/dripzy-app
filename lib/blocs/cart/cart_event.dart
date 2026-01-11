@@ -43,3 +43,10 @@ class UpdateCartItemQuantity extends CartEvent {
   @override
   List<Object?> get props => [productId, size, quantity];
 }
+
+class RemoveCartItem extends CartEvent {
+  final String productId;
+  final String size;
+
+  RemoveCartItem({required this.productId, required this.size});
+}

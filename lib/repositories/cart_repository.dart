@@ -83,4 +83,25 @@ class CartRepository {
       return Result.failure(e.toString());
     }
   }
+
+  Future<Result<bool>> removeItemFromCart({
+    required String productId,
+    required String size,
+  }) async {
+    final accessToken = await AuthStorage.getAccessToken();
+    if (accessToken == null) {
+      return Result.failure('Access token not found');
+    }
+
+    try {
+      final success = await _cartService.removeItemFromCart(
+        accessToken: accessToken,
+        productId: productId,
+        size: size,
+      );
+      return Result.success(success);
+    } catch (e) {
+      return Result.failure(e.toString());
+    }
+  }
 }

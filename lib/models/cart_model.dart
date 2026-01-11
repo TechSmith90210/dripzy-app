@@ -27,32 +27,34 @@ class CartProduct {
 class Cart {
   final String? id;
   final String userId;
-  final List<CartProduct>? products;
+  final List<CartProduct> products;
 
-  Cart({this.id, required this.userId, this.products = const []});
+  Cart({
+    this.id,
+    required this.userId,
+    this.products = const [],
+  });
 
   factory Cart.fromJson(Map<String, dynamic> data) {
-    final List<dynamic>? productsJson = data['products'] as List<dynamic>?;
-
     return Cart(
       id: data['_id'] as String?,
       userId: data['userId'] as String,
-      products:
-          productsJson
-              ?.map(
-                (pJson) => CartProduct.fromJson(pJson as Map<String, dynamic>),
-              )
-              .toList() ??
-          [],
+      products: (data['products'] as List<dynamic>?)
+          ?.map(
+            (p) => CartProduct.fromJson(p as Map<String, dynamic>),
+      )
+          .toList() ??
+          const [],
     );
   }
+
   Map<String, dynamic> toJson() {
-    final List<Map<String, dynamic>> productJsons =
-        products?.map((p) => p.toJson()).toList() ?? [];
     return {
       if (id != null) '_id': id,
       'userId': userId,
-      'products': productJsons,
+      'products': products.map((p) => p.toJson()).toList(),
     };
   }
+
+  Cart.empty() : id = null, userId = '', products = const [];
 }

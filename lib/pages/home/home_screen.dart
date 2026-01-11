@@ -1,6 +1,6 @@
 import 'package:dripzy/blocs/home/home_event.dart';
 import 'package:dripzy/core/router/routes.dart';
-import 'package:dripzy/pages/home/widgets/productCard.dart';
+import 'package:dripzy/pages/home/widgets/product_card.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   actions: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.pushNamed(AppRoutes.cartName);
+                      },
                       icon: const Icon(IconsaxPlusBold.shopping_bag),
                     ),
                     IconButton(

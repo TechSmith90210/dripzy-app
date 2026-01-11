@@ -20,6 +20,7 @@ class CustomIconButton2 extends StatelessWidget {
           foregroundColor: fgColor ?? color.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: color.primary.withValues(alpha: 0.1))
           ),
           padding:  EdgeInsets.symmetric(vertical: bgColor !=null ? 6 : 10),
         ).copyWith(

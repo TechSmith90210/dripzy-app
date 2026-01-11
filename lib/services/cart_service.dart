@@ -17,13 +17,15 @@ class CartService {
         options: Options(headers: _headers(accessToken: accessToken)),
       );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        return Cart.fromJson(data['cart']);
-      }
-      throw Exception(response.data['message']);
+      final data = response.data;
+      return Cart.fromJson(data['cart']);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message']);
+      if (e.response?.statusCode == 404) {
+        // User doesn't have a cart yet
+        return Cart.empty();
+      }
+
+      throw Exception(e.response?.data['message'] ?? 'Failed to fetch cart');
     }
   }
 
@@ -123,6 +125,40 @@ class CartService {
                 : 'Unknown error updating cart item';
         throw Exception(message);
       }
+    } on DioException catch (e) {
+      final errorMessage = e.response?.data?['message'];
+      if (errorMessage != null && errorMessage.isNotEmpty) {
+        throw Exception(errorMessage);
+      }
+      throw Exception(e.message ?? 'An unknown network error occurred.');
+    }
+  }
+
+  Future<bool> removeItemFromCart({
+    required String accessToken,
+    required String productId,
+    required String size,
+  }) async {
+    if (size.isEmpty || productId.isEmpty) {
+      throw Exception('Please select size and provide productId');
+    }
+
+    try {
+      final response = await _dio.delete(
+        ApiConstants.baseUrl + ApiConstants.deleteCartItem,
+        options: Options(headers: _headers(accessToken: accessToken)),
+        data: {'productId': productId, 'size': size},
+      );
+
+      final data = response.data;
+      if (response.statusCode == 200 &&
+          data != null &&
+          data['success'] == true) {
+        debugPrint("[removeItemFromCart] Removed Item from Cart");
+        return true;
+      }
+      debugPrint("Response code ${response.statusCode} - ${response.data}");
+      return false;
     } on DioException catch (e) {
       final errorMessage = e.response?.data?['message'];
       if (errorMessage != null && errorMessage.isNotEmpty) {

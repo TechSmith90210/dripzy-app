@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../pages/auth/get_started_screen.dart';
 import '../../pages/auth/login_screen.dart';
+import '../../pages/cart/cart_screen.dart';
 import '../../pages/home/home_screen.dart';
 import '../../pages/splash/splash_screen.dart';
 import 'routes.dart';
@@ -76,14 +77,23 @@ final appRouter = GoRouter(
           ),
     ),
 
-    GoRoute(path: AppRoutes.productPage, name: AppRoutes.productPageName,
+    GoRoute(
+      path: AppRoutes.productPage,
+      name: AppRoutes.productPageName,
       builder: (context, state) {
-      final extra = state.extra;
-      final productId = extra as String;
+        final extra = state.extra;
+        final productId = extra as String;
         return ProductScreen(productId: productId);
       },
+    ),
 
-    )
+    GoRoute(
+      path: AppRoutes.cart,
+      name: AppRoutes.cartName,
+      builder: (context, state) {
+        return CartScreen();
+      },
+    ),
   ],
   errorBuilder:
       (context, state) =>

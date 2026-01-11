@@ -1,10 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:dripzy/blocs/cart/cart_event.dart';
 import 'package:dripzy/blocs/cart/cart_state.dart';
 import 'package:dripzy/blocs/product/product_bloc.dart';
 import 'package:dripzy/blocs/product/product_event.dart';
 import 'package:dripzy/blocs/product/product_state.dart';
-import 'package:dripzy/widgets/customCircleButton.dart';
+import 'package:dripzy/widgets/custom_circle_button.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:dripzy/widgets/custom_button_1.dart';
 import 'package:dripzy/widgets/custom_icon_button2.dart';
@@ -12,9 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../blocs/cart/cart_bloc.dart';
+import '../../core/utils/debouncer.dart';
 
 class ProductScreen extends StatefulWidget {
   final String productId;
@@ -29,6 +30,7 @@ class _ProductScreenState extends State<ProductScreen> {
   int _currentImageIndex = 0;
   String? selectedSize;
 
+  late final Debouncer _quantityDebouncer;
   late final CartBloc _cartBloc;
 
   @override
@@ -36,7 +38,7 @@ class _ProductScreenState extends State<ProductScreen> {
     context.read<ProductBloc>().add(
       LoadSingleProduct(productId: widget.productId),
     );
-
+    _quantityDebouncer = Debouncer(milliseconds: 50);
     super.initState();
   }
 
@@ -49,6 +51,7 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   void dispose() {
     _cartBloc.add(ClearCartItemState());
+    _quantityDebouncer.dispose();
     super.dispose();
   }
 
@@ -255,29 +258,27 @@ class _ProductScreenState extends State<ProductScreen> {
                     SliverPadding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       sliver: SliverToBoxAdapter(
-                        child: Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 5,
-                            children: [
-                              Text(
-                                "Description",
-                                style: TextStyle(
-                                  color: color.primary,
-                                  fontSize: 12,
-                                ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 5,
+                          children: [
+                            Text(
+                              "Description",
+                              style: TextStyle(
+                                color: color.primary,
+                                fontSize: 12,
                               ),
-                              Text(
-                                product.description,
-                                style: TextStyle(
-                                  color: color.primary.withValues(alpha: 0.6),
-                                  fontWeight: FontWeight.w100,
-                                  fontSize: 10,
-                                ),
+                            ),
+                            Text(
+                              product.description,
+                              style: TextStyle(
+                                color: color.primary.withValues(alpha: 0.6),
+                                fontWeight: FontWeight.w100,
+                                fontSize: 10,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -301,16 +302,24 @@ class _ProductScreenState extends State<ProductScreen> {
                       }
                     },
                     builder: (context, state) {
-                      // Default empty map
-                      Map<String, int> sizeQuantityMap = {};
-                      if (state is CartItemQuantityState) {
-                        sizeQuantityMap = state.sizeQuantityMap;
+                      int quantity = 0;
+
+                      if (selectedSize == null) {
+                        quantity = 0;
+                      } else if (state is CartItemQuantityState) {
+                        quantity = state.sizeQuantityMap[selectedSize] ?? 0;
+                      } else if (state is CartLoaded) {
+                        final item = state.cart.products.firstWhereOrNull(
+                              (p) =>
+                          p.product.id == widget.productId &&
+                              p.size == selectedSize,
+                        );
+                        quantity = item?.quantity ?? 0;
                       }
-                      final quantity =
-                          (selectedSize != null &&
-                                  sizeQuantityMap.containsKey(selectedSize))
-                              ? sizeQuantityMap[selectedSize]!
-                              : 0;
+
+                      print("quantity for size $selectedSize → $quantity");
+
+
 
                       print("quantity for size $selectedSize → $quantity");
 
@@ -320,21 +329,25 @@ class _ProductScreenState extends State<ProductScreen> {
                           selectedSize: selectedSize!,
                           quantity: quantity,
                           onTapPlus: () {
-                            context.read<CartBloc>().add(
-                              UpdateCartItemQuantity(
-                                productId: product.id,
-                                size: selectedSize!,
-                                quantity: quantity + 1,
+                            _quantityDebouncer.run(
+                              () => context.read<CartBloc>().add(
+                                UpdateCartItemQuantity(
+                                  productId: product.id,
+                                  size: selectedSize!,
+                                  quantity: quantity + 1,
+                                ),
                               ),
                             );
                           },
                           onTapMinus: () {
-                            if (quantity >= 0) {
-                              context.read<CartBloc>().add(
-                                UpdateCartItemQuantity(
-                                  productId: product.id,
-                                  size: selectedSize!,
-                                  quantity: quantity - 1,
+                            if (quantity > 0) {
+                              _quantityDebouncer.run(
+                                () => context.read<CartBloc>().add(
+                                  UpdateCartItemQuantity(
+                                    productId: product.id,
+                                    size: selectedSize!,
+                                    quantity: quantity - 1,
+                                  ),
                                 ),
                               );
                             }
@@ -530,6 +543,7 @@ class _ProductScreenState extends State<ProductScreen> {
             onPressed: onTapPlus,
             // Use an accent color for the main action button (Add/Plus)
             bgColor: color.tertiary,
+            fgColor: color.primary,
           ),
         ),
       ],

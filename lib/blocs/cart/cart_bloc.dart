@@ -12,7 +12,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Map<String, int> get sizeQuantityMap => Map.unmodifiable(_sizeQuantityMap);
 
-
   CartBloc({required CartRepository repository})
     : _cartRepository = repository,
       super(CartInitial()) {
@@ -21,6 +20,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CartItemAdded>(_handleAddItemToCart);
     on<ClearCartItemState>(_handleClearCartItemState);
     on<UpdateCartItemQuantity>(_handleUpdateCartItemQuantity);
+    on<RemoveCartItem>(_handleRemoveCartItem);
   }
 
   Future<void> _handleGetCartItem(
@@ -76,9 +76,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> _handleAddItemToCart(
-      CartItemAdded event,
-      Emitter<CartState> emit,
-      ) async {
+    CartItemAdded event,
+    Emitter<CartState> emit,
+  ) async {
     // Optimistic update: increase local quantity immediately
     _sizeQuantityMap[event.size] = (_sizeQuantityMap[event.size] ?? 0) + 1;
     emit(
@@ -103,8 +103,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           message: "Item added to cart",
         ),
       );
-    }
-   else  if (result.isFailure) {
+    } else if (result.isFailure) {
       // _sizeQuantityMap[event.size] = (_sizeQuantityMap[event.size] ?? 1) - 1;
       emit(
         CartItemQuantityState(
@@ -114,38 +113,61 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         ),
       );
     }
-
   }
-
 
   Future<void> _handleUpdateCartItemQuantity(
     UpdateCartItemQuantity event,
     Emitter<CartState> emit,
   ) async {
+    if (event.quantity < 0) return;
 
-    print("Size is ${event.size}");
     _sizeQuantityMap[event.size] = event.quantity;
 
-    print("the map is updated: $_sizeQuantityMap");
-
-    final data = await _cartRepository.updateCartItem(
+    final updateResult = await _cartRepository.updateCartItem(
       productId: event.productId,
       size: event.size,
       quantity: event.quantity,
     );
 
-    data.when(
-      success:
-          (data) => emit(
-            CartItemQuantityState(
-              productId: event.productId,
-              sizeQuantityMap: Map.from(_sizeQuantityMap),
-              message: "Successfully updated quantity",
-            ),
-          ),
-      failure: (error) {
-        print("hey $error");
-        emit(CartError(message: error));}
+    if (emit.isDone) return;
+
+    if (updateResult.isFailure) {
+      emit(CartError(message: updateResult.error!));
+      return;
+    }
+
+    final cartResult = await _cartRepository.getCart();
+
+    if (emit.isDone) return;
+
+    cartResult.when(
+      success: (cart) => emit(CartLoaded(cart: cart)),
+      failure: (e) => emit(CartError(message: e)),
+    );
+  }
+
+  Future<void> _handleRemoveCartItem(
+    RemoveCartItem event,
+    Emitter<CartState> emit,
+  ) async {
+    _sizeQuantityMap.remove(event.size);
+
+    final updatedResult = await _cartRepository.removeItemFromCart(
+      productId: event.productId,
+      size: event.size,
+    );
+    if (emit.isDone) return;
+
+    if (updatedResult.isFailure) {
+      emit(CartError(message: updatedResult.error!));
+      return;
+    }
+
+    final cartResult = await _cartRepository.getCart();
+
+    cartResult.when(
+      success: (cart) => emit(CartLoaded(cart: cart)),
+      failure: (e) => emit(CartError(message: e)),
     );
   }
 

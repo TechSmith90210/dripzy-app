@@ -12,12 +12,14 @@ class GetStartedScreen extends StatefulWidget {
   State<GetStartedScreen> createState() => _GetStartedScreenState();
 }
 
-class _GetStartedScreenState extends State<GetStartedScreen> {
+class _GetStartedScreenState extends State<GetStartedScreen> with WidgetsBindingObserver {
   VideoPlayerController? _playerController;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     _playerController = VideoPlayerController.asset(
         'assets/get_started/get_started_video.mp4',
       )
@@ -26,16 +28,40 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
         setState(() {});
         _playerController
           ?..setLooping(true)
-          ..setPlaybackSpeed(1.6)
+          ..setPlaybackSpeed(1.2)
           ..play();
       });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _playerController?.dispose();
     super.dispose();
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_playerController == null) return;
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        if (_playerController!.value.isInitialized) {
+          _playerController!.play();
+        }
+        break;
+
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        _playerController!.pause();
+        break;
+
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

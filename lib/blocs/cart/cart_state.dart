@@ -30,8 +30,6 @@ class CartItemQuantityState extends CartState {
   });
 }
 
-
-
 class CartError extends CartState {
   const CartError({required super.message});
 }
