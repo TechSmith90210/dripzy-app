@@ -1,12 +1,14 @@
 import 'package:dripzy/core/utils/auth_storage.dart';
 import 'package:dripzy/core/utils/result.dart';
-import 'package:dripzy/models/cart_model.dart';
+import 'package:dripzy/models/cart/cart_model.dart';
 import 'package:dripzy/services/cart_service.dart';
+
+import '../models/cart/cart_response_model.dart';
 
 class CartRepository {
   final _cartService = CartService();
 
-  Future<Result<Cart>> getCart() async {
+  Future<Result<CartResponse>> getCart() async {
     try {
       final result = await _cartService.getCart();
       return Result.success(result);
@@ -62,7 +64,7 @@ class CartRepository {
       );
       return Result.success(success); // success is a bool from the service
     } catch (e) {
-      print("errrror ${e.toString()}");
+      print("Error: ${e.toString()}");
       return Result.failure(e.toString());
     }
   }
@@ -76,6 +78,16 @@ class CartRepository {
         productId: productId,
         size: size,
       );
+      return Result.success(success);
+    } catch (e) {
+      return Result.failure(e.toString());
+    }
+  }
+
+  Future<Result<bool>> clearEntireCart() async {
+    try {
+      final success = await _cartService.clearEntireCart();
+
       return Result.success(success);
     } catch (e) {
       return Result.failure(e.toString());

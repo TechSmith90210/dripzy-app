@@ -1,6 +1,8 @@
+import 'package:dripzy/models/cart/price_breakdown_model.dart';
 import 'package:dripzy/repositories/cart_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/cart/cart_model.dart';
 import 'cart_event.dart';
 import 'cart_state.dart';
 
@@ -21,6 +23,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<ClearCartItemState>(_handleClearCartItemState);
     on<UpdateCartItemQuantity>(_handleUpdateCartItemQuantity);
     on<RemoveCartItem>(_handleRemoveCartItem);
+    on<ClearCart>(_handleClearEntireCart);
   }
 
   Future<void> _handleGetCartItem(
@@ -70,7 +73,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final data = await _cartRepository.getCart();
 
     data.when(
-      success: (data) => emit(CartLoaded(cart: data)),
+      success:
+          (data) => emit(
+            CartLoaded(cart: data.cart, priceBreakdown: data.priceBreakdown),
+          ),
       failure: (error) => emit(CartError(message: error)),
     );
   }
@@ -141,7 +147,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (emit.isDone) return;
 
     cartResult.when(
-      success: (cart) => emit(CartLoaded(cart: cart)),
+      success:
+          (cart) => emit(
+            CartLoaded(cart: cart.cart, priceBreakdown: cart.priceBreakdown),
+          ),
       failure: (e) => emit(CartError(message: e)),
     );
   }
@@ -166,7 +175,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final cartResult = await _cartRepository.getCart();
 
     cartResult.when(
-      success: (cart) => emit(CartLoaded(cart: cart)),
+      success:
+          (cart) => emit(
+            CartLoaded(cart: cart.cart, priceBreakdown: cart.priceBreakdown),
+          ),
       failure: (e) => emit(CartError(message: e)),
     );
   }
@@ -177,5 +189,32 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   ) {
     _sizeQuantityMap.clear(); // clear cached quantities
     emit(CartInitial());
+  }
+
+  Future<void> _handleClearEntireCart(
+    ClearCart event,
+    Emitter<CartState> emit,
+  ) async {
+    emit(CartLoading());
+
+    final cartClearResult = await _cartRepository.clearEntireCart();
+
+    if (emit.isDone) return;
+
+    if (cartClearResult.isFailure) {
+      emit(CartError(message: cartClearResult.error!));
+      return;
+    }
+
+    cartClearResult.when(
+      success:
+          (success) => emit(
+            CartLoaded(
+              cart: Cart.empty(),
+              priceBreakdown: PriceBreakdown.empty(),
+            ),
+          ),
+      failure: (e) => emit(CartError(message: e)),
+    );
   }
 }

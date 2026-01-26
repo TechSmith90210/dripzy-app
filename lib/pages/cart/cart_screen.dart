@@ -1,5 +1,6 @@
 import 'package:dripzy/blocs/cart/cart_event.dart';
 import 'package:dripzy/blocs/cart/cart_state.dart';
+import 'package:dripzy/pages/cart/widgets/checkoutBar.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:dripzy/widgets/custom_circle_button.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,53 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  void _showCartRemovalDialog({
+    required VoidCallback onConfirm,
+    required VoidCallback onCancel,
+    required ColorScheme color,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "This will remove all items from your cart. Are you sure?",
+          ),
+          titleTextStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w300,
+            color: color.primary,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: onConfirm,
+              child: Text(
+                "Yes",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: color.onPrimary,
+                ),
+              ),
+            ),
+
+            OutlinedButton(
+              onPressed: onCancel,
+              child: Text(
+                "No",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: color.primary,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     //get cart from cartBloc
@@ -27,6 +75,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Your Cart"),
@@ -39,6 +88,30 @@ class _CartScreenState extends State<CartScreen> {
           onTap: () => context.pop(),
           child: Icon(IconsaxPlusBroken.arrow_left_1),
         ),
+        actions: [
+          BlocBuilder<CartBloc, CartState>(
+            builder: (context, state) {
+              if (state is CartLoaded && state.cart.products.isNotEmpty) {
+                return IconButton(
+                  onPressed: () {
+                    _showCartRemovalDialog(
+                      onConfirm: () {
+                        context.pop();
+                        context.read<CartBloc>().add(ClearCart());
+                      },
+                      onCancel: () => context.pop(),
+                      color: color,
+                    );
+                  },
+                  icon: const Icon(IconsaxPlusBroken.bag_cross),
+                );
+              }
+
+              return const SizedBox(); // no button if cart empty
+            },
+          ),
+        ],
+
         centerTitle: true,
         backgroundColor: color.background,
       ),
@@ -116,6 +189,32 @@ class _CartScreenState extends State<CartScreen> {
           },
         ),
       ),
+
+      //persistent bottom sheet with cta including a dropdown showing the included charges
+      bottomSheet: SafeArea(
+        top: false,
+        child: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            if (state is CartLoaded) {
+              final cart = state.cart;
+              final noOfItems = cart.products.length;
+
+              final priceBreakDown = state.priceBreakdown;
+
+              if (noOfItems > 0) {
+                return CheckoutBar(
+                  totalValue: priceBreakDown.totalValue,
+                  itemsValue: noOfItems,
+                  onCheckout: () {},
+                  shippingPrice: priceBreakDown.shippingPrice,
+                  subTotalPrice: priceBreakDown.subTotal,
+                );
+              }
+            }
+            return SizedBox.shrink();
+          },
+        ),
+      ),
     );
   }
 
@@ -132,13 +231,14 @@ class _CartScreenState extends State<CartScreen> {
   }) {
     return Container(
       padding: const EdgeInsets.all(4),
+      margin: EdgeInsets.only(bottom: 7),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Product image
           Container(
-            height: 120,
-            width: 100,
+            height: 150,
+            width: 120,
             decoration: BoxDecoration(
               border: Border.all(color: color.primary, width: 1),
               borderRadius: BorderRadius.circular(3),
@@ -152,7 +252,7 @@ class _CartScreenState extends State<CartScreen> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 27,
+              spacing: 30, // this is now your single source of truth
               children: [
                 // Title + delete
                 Row(
@@ -162,16 +262,16 @@ class _CartScreenState extends State<CartScreen> {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 4, // spacing inside inner column
                         children: [
                           Text(
                             name,
                             style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
                               color: color.primary,
                             ),
                           ),
-                          SizedBox(height: 4),
                           Text(
                             "Size: $size",
                             style: TextStyle(
@@ -185,7 +285,7 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     GestureDetector(
                       onTap: onTapDelete,
-                      child: Icon(
+                      child: const Icon(
                         IconsaxPlusBroken.trash,
                         color: Colors.red,
                         size: 20,
@@ -194,7 +294,7 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
 
-                // Price
+                // Price row
                 Row(
                   children: [
                     Text(
@@ -206,7 +306,6 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     const Spacer(),
-                    // Quantity
                     _buildQuantityRow(
                       color: color,
                       quantity: quantity,

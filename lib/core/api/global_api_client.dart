@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'api_constants.dart';
 
@@ -23,12 +24,12 @@ class ApiClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          print('TOKEN = $_accessToken');
-          print('HEADERS BEFORE = ${options.headers}');
+          debugPrint('TOKEN = $_accessToken');
+          debugPrint('HEADERS BEFORE = ${options.headers}');
           if (_accessToken != null) {
             options.headers['access-token'] = _accessToken;
           }
-          print('HEADERS AFTER = ${options.headers}');
+          debugPrint('HEADERS AFTER = ${options.headers}');
           handler.next(options);
         },
 

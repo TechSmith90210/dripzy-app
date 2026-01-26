@@ -1,4 +1,5 @@
-import 'package:dripzy/models/cart_model.dart';
+import 'package:dripzy/models/cart/cart_model.dart';
+import 'package:dripzy/models/cart/price_breakdown_model.dart';
 
 abstract class CartState {
   final String message;
@@ -11,8 +12,9 @@ class CartLoading extends CartState {}
 
 class CartLoaded extends CartState {
   final Cart cart;
+  final PriceBreakdown priceBreakdown;
 
-  const CartLoaded({required this.cart}) : super(message: "Cart loaded");
+  const CartLoaded({required this.cart, required this.priceBreakdown}) : super(message: "Cart loaded");
 }
 
 class CartItemAddedSuccess extends CartState {

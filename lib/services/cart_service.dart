@@ -1,20 +1,31 @@
 import 'package:dio/dio.dart';
 import 'package:dripzy/core/api/api_constants.dart';
 import 'package:dripzy/core/api/global_api_client.dart';
-import 'package:dripzy/models/cart_model.dart';
+import 'package:dripzy/models/cart/cart_model.dart';
 import 'package:flutter/foundation.dart';
+
+import '../models/cart/cart_response_model.dart';
+import '../models/cart/price_breakdown_model.dart';
 
 class CartService {
   final Dio _dio = ApiClient().dio;
 
   // ---------------- GET CART ----------------
-  Future<Cart> getCart() async {
+  Future<CartResponse> getCart() async {
     try {
       final response = await _dio.get(ApiConstants.getCart);
-      return Cart.fromJson(response.data['cart']);
+      return CartResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        return Cart.empty(); // user has no cart yet
+        return CartResponse(
+          cart: Cart.empty(),
+          priceBreakdown: PriceBreakdown(
+            subTotal: 0,
+            isFreeShippingEligible: false,
+            shippingPrice: 0,
+            totalValue: 0,
+          ),
+        );
       }
       throw Exception(e.response?.data?['message'] ?? 'Failed to fetch cart');
     }
@@ -125,6 +136,20 @@ class CartService {
       throw Exception(
         e.response?.data?['message'] ?? 'Failed to remove item from cart',
       );
+    }
+  }
+
+  // ------CLEAR CART-------
+
+  Future<bool> clearEntireCart() async {
+    try {
+      final response = await _dio.delete(ApiConstants.clearCart);
+      if (response.data?['success'] == true) {
+        return true;
+      }
+      return false;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data?['message'] ?? 'Failed to clear cart');
     }
   }
 }
