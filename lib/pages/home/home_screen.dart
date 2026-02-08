@@ -1,3 +1,6 @@
+import 'package:dripzy/blocs/cart/cart_bloc.dart';
+import 'package:dripzy/blocs/cart/cart_event.dart';
+import 'package:dripzy/blocs/cart/cart_state.dart';
 import 'package:dripzy/blocs/home/home_event.dart';
 import 'package:dripzy/core/router/routes.dart';
 import 'package:dripzy/pages/home/widgets/product_card.dart';
@@ -23,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     context.read<HomeBloc>().add(LoadProducts());
+    context.read<CartBloc>().add(GetUserCart());
     super.initState();
   }
 
@@ -60,12 +64,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(IconsaxPlusBroken.menu_1),
                   ),
                   actions: [
-                    IconButton(
-                      onPressed: () {
-                        context.pushNamed(AppRoutes.cartName);
+                    BlocBuilder<CartBloc, CartState>(
+                      builder: (context, state) {
+                        int itemCount = 0;
+
+                        if (state is CartLoaded) {
+                          itemCount = state.cart.products.length;
+                        }
+
+                        final cartIcon = IconButton(
+                          onPressed: () {
+                            context.pushNamed(AppRoutes.cartName);
+                          },
+                          icon: const Icon(IconsaxPlusBold.shopping_bag),
+                        );
+
+                        // Show badge only if count > 0
+                        if (itemCount > 0) {
+                          return Badge(
+                            label: Text(itemCount.toString()),
+                            child: cartIcon,
+                          );
+                        }
+
+                        return cartIcon;
                       },
-                      icon: const Icon(IconsaxPlusBold.shopping_bag),
                     ),
+
                     IconButton(
                       onPressed: () {},
                       icon: const Icon(IconsaxPlusBold.profile_circle),

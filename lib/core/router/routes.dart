@@ -8,6 +8,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String productPage = '/productPage';
   static const String cart = '/cart';
+  static const String profile = '/profile';
 
   // names
   static const String splashName = 'splash';
@@ -18,4 +19,5 @@ class AppRoutes {
   static const String registerName = 'register';
   static const String productPageName = 'productPage';
   static const String cartName = 'cart';
+  static const String profileName = 'profile';
 }

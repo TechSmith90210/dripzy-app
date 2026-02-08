@@ -1,4 +1,4 @@
-import 'package:dripzy/pages/cart/widgets/priceBreakdownModal.dart';
+import 'package:dripzy/pages/cart/widgets/price_breakdown_modal.dart';
 import 'package:flutter/material.dart';
 
 import '../../../widgets/custom_button_1.dart';
@@ -27,7 +27,7 @@ class CheckoutBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
         decoration: BoxDecoration(
-          color: color.background,
+          color: color.surface,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -56,9 +56,10 @@ class CheckoutBar extends StatelessWidget {
                       children: [
                         Text(
                           "₹$totalValue",
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: color.primary
                           ),
                         ),
                         SizedBox(width: 7),

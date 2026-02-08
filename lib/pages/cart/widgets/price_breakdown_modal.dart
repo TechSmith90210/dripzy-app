@@ -12,6 +12,7 @@ class PriceBreakDownModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
     final total = subTotalPrice + deliveryCharges;
 
     return Padding(
@@ -23,48 +24,57 @@ class PriceBreakDownModal extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _row("Subtotal", subTotalPrice),
-            _row("Delivery", deliveryCharges),
+            _row("Subtotal", subTotalPrice, color),
+            _row("Delivery", deliveryCharges, color),
 
             const SizedBox(height: 12),
 
-            _totalRow("Total", total),
+            _totalRow("Total", total, color),
           ],
         ),
       ),
     );
   }
 
-  Widget _row(String label, double value) {
+  Widget _row(String label, double value, ColorScheme color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
-          ),
+          Text(label, style: TextStyle(fontSize: 13, color: color.primary)),
           Text(
             "₹${value.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: color.primary,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _totalRow(String label, double value) {
+  Widget _totalRow(String label, double value, ColorScheme color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: color.primary,
+          ),
         ),
         Text(
           "₹${value.toStringAsFixed(2)}",
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: color.primary,
+          ),
         ),
       ],
     );

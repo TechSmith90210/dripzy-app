@@ -92,12 +92,12 @@ class _ProductScreenState extends State<ProductScreen> {
                         onTap: () => context.pop(),
                         child: Icon(IconsaxPlusBroken.arrow_left_1),
                       ),
-                      actions: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(IconsaxPlusBroken.heart),
-                        ),
-                      ],
+                      // actions: [
+                      //   IconButton(
+                      //     onPressed: () {},
+                      //     icon: Icon(IconsaxPlusBroken.heart),
+                      //   ),
+                      // ],
                     ),
 
                     //carousel image viewer
