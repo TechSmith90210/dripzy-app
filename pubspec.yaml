@@ -50,6 +50,7 @@ dependencies:
   shimmer: ^3.0.0
   carousel_slider: ^5.1.1
   collection:
+  pretty_dio_logger: ^1.4.0
 
 dev_dependencies:
   flutter_test:

@@ -8,12 +8,12 @@ import '../models/cart/cart_response_model.dart';
 import '../models/cart/price_breakdown_model.dart';
 
 class CartService {
-  final Dio _dio = ApiClient().dio;
+  final ApiClient client = ApiClient();
 
   // ---------------- GET CART ----------------
   Future<CartResponse> getCart() async {
     try {
-      final response = await _dio.get(ApiConstants.getCart);
+      final response = await client.get(ApiConstants.getCart);
       return CartResponse.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
@@ -41,7 +41,7 @@ class CartService {
     }
 
     try {
-      final response = await _dio.get(
+      final response = await client.get(
         ApiConstants.getCartItem,
         queryParameters: {'productId': productId, 'size': size},
       );
@@ -69,7 +69,7 @@ class CartService {
     }
 
     try {
-      final response = await _dio.post(
+      final response = await client.post(
         ApiConstants.addCartItem,
         data: {'productId': productId, 'size': size},
       );
@@ -95,7 +95,7 @@ class CartService {
     }
 
     try {
-      final response = await _dio.patch(
+      final response = await client.patch(
         ApiConstants.updateCartItem,
         data: {'productId': productId, 'size': size, 'quantity': quantity},
       );
@@ -121,7 +121,7 @@ class CartService {
     }
 
     try {
-      final response = await _dio.delete(
+      final response = await client.delete(
         ApiConstants.deleteCartItem,
         data: {'productId': productId, 'size': size},
       );
@@ -143,7 +143,7 @@ class CartService {
 
   Future<bool> clearEntireCart() async {
     try {
-      final response = await _dio.delete(ApiConstants.clearCart);
+      final response = await client.delete(ApiConstants.clearCart);
       if (response.data?['success'] == true) {
         return true;
       }

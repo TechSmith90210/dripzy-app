@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:dripzy/models/user_model.dart';
+import 'package:dripzy/models/user/user_model.dart';
 
 import '../core/api/api_constants.dart';
 

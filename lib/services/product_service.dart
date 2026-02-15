@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:dripzy/core/api/api_constants.dart';
-import 'package:dripzy/models/product_model.dart';
+import 'package:dripzy/models/product/product_model.dart';
 
 class ProductService {
   final Dio dio = Dio();

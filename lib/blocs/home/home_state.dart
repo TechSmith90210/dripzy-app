@@ -1,4 +1,4 @@
-import 'package:dripzy/models/product_model.dart';
+import 'package:dripzy/models/product/product_model.dart';
 
 abstract class HomeState {
   final String message;

@@ -1,4 +1,4 @@
-import 'package:dripzy/models/user_model.dart';
+import 'package:dripzy/models/user/user_model.dart';
 import 'package:dripzy/services/auth_service.dart';
 
 class AuthRepository {

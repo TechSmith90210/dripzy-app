@@ -1,5 +1,5 @@
 import 'package:dripzy/core/utils/result.dart';
-import 'package:dripzy/models/product_model.dart';
+import 'package:dripzy/models/product/product_model.dart';
 import 'package:dripzy/services/product_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

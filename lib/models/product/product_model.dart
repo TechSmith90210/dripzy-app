@@ -104,4 +104,20 @@ class Product {
       Product.fromJson(json.decode(jsonString));
 
   String toJsonString() => json.encode(toJson());
+
+  static const Product empty = Product(
+    id: '',
+    name: '',
+    description: '',
+    price: 0.0,
+    images: [],
+    colors: [],
+    category: null,
+    sizes: [],
+    availableStock: 0,
+    isFeatured: false,
+    tags: [],
+    views: 0,
+    gender: 'unisex',
+  );
 }

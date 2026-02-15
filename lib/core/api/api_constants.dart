@@ -21,4 +21,9 @@ class ApiConstants {
   static const String updateCartItem = "/cart/updateItem";
   static const String deleteCartItem = "/cart/removeItem";
   static const String clearCart = "/cart/clearCart";
+
+  //wishlist routes
+  static const String getWishlist = "/wishlist/";
+  static const String addToWishlist = "/wishlist/";
+  static String removeFromWishlist(String productId) => "/wishlist/$productId";
 }

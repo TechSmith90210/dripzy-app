@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:dripzy/models/product_model.dart';
+import 'package:dripzy/models/product/product_model.dart';
 
 class ProductCard extends StatefulWidget {
   final Product product;
