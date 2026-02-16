@@ -3,7 +3,7 @@ import 'package:dripzy/blocs/cart/cart_event.dart';
 import 'package:dripzy/blocs/cart/cart_state.dart';
 import 'package:dripzy/blocs/home/home_event.dart';
 import 'package:dripzy/core/router/routes.dart';
-import 'package:dripzy/pages/home/widgets/product_card.dart';
+import 'package:dripzy/screens/home/widgets/product_card.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,7 +92,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        //go to profile page
+                        context.push(AppRoutes.profile);
+                      },
                       icon: const Icon(IconsaxPlusBold.profile_circle),
                     ),
                   ],

@@ -4,11 +4,15 @@ import 'package:dripzy/blocs/cart/cart_state.dart';
 import 'package:dripzy/blocs/product/product_bloc.dart';
 import 'package:dripzy/blocs/product/product_event.dart';
 import 'package:dripzy/blocs/product/product_state.dart';
-import 'package:dripzy/pages/product/widgets/product_app_bar.dart';
-import 'package:dripzy/pages/product/widgets/product_image_carousel.dart';
-import 'package:dripzy/pages/product/widgets/product_initial_actions.dart';
-import 'package:dripzy/pages/product/widgets/product_quantity_controls.dart';
-import 'package:dripzy/pages/product/widgets/product_size_selector.dart';
+import 'package:dripzy/blocs/wishlist/wishlist_bloc.dart';
+import 'package:dripzy/blocs/wishlist/wishlist_event.dart';
+import 'package:dripzy/blocs/wishlist/wishlist_state.dart';
+import 'package:dripzy/models/wishlist/wishlist_model.dart';
+import 'package:dripzy/screens/product/widgets/product_app_bar.dart';
+import 'package:dripzy/screens/product/widgets/product_image_carousel.dart';
+import 'package:dripzy/screens/product/widgets/product_initial_actions.dart';
+import 'package:dripzy/screens/product/widgets/product_quantity_controls.dart';
+import 'package:dripzy/screens/product/widgets/product_size_selector.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -84,7 +88,21 @@ class _ProductScreenState extends State<ProductScreen> {
               children: [
                 CustomScrollView(
                   slivers: [
-                    ProductAppBar(onBack: () => context.pop()),
+                    BlocBuilder<WishlistBloc, WishlistState>(
+                      builder: (context,state){
+                        final isWishlisted = state.isWishlisted(product.id);
+                        return ProductAppBar(
+                          isWishlisted: isWishlisted,
+                          onBack: () => context.pop(),
+                          onHeartClick: () {
+                            context.read<WishlistBloc>().add(
+                              WishlistItemToggled(productId: widget.productId),
+                            );
+                          },
+                        );
+                      },
+
+                    ),
 
                     //carousel image viewer
                     SliverPadding(

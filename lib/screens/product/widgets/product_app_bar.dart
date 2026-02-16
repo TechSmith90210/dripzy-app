@@ -4,7 +4,14 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 
 class ProductAppBar extends StatelessWidget {
   final VoidCallback onBack;
-  const ProductAppBar({super.key, required this.onBack});
+  final VoidCallback onHeartClick;
+  final bool isWishlisted;
+  const ProductAppBar({
+    super.key,
+    required this.onBack,
+    required this.onHeartClick,
+    required this.isWishlisted,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +27,16 @@ class ProductAppBar extends StatelessWidget {
       floating: true,
       backgroundColor: color.background,
       leading: GestureDetector(
-        onTap: () => context.pop(),
+        onTap: onBack,
         child: Icon(IconsaxPlusBroken.arrow_left_1),
       ),
       actions: [
         IconButton(
-          onPressed: () {},
-          icon: Icon(IconsaxPlusBroken.heart),
+          onPressed: onHeartClick,
+          icon: Icon(
+            isWishlisted ? IconsaxPlusBold.heart : IconsaxPlusBroken.heart,
+            color: isWishlisted ? color.tertiary : color.primary,
+          ),
         ),
       ],
     );

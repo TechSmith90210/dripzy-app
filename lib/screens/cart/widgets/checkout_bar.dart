@@ -1,4 +1,4 @@
-import 'package:dripzy/pages/cart/widgets/price_breakdown_modal.dart';
+import 'package:dripzy/screens/cart/widgets/price_breakdown_modal.dart';
 import 'package:flutter/material.dart';
 
 import '../../../widgets/custom_button_1.dart';

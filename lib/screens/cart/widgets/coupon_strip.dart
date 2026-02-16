@@ -1,4 +1,4 @@
-import 'package:dripzy/pages/cart/widgets/coupon_modal.dart';
+import 'package:dripzy/screens/cart/widgets/coupon_modal.dart';
 import 'package:flutter/material.dart';
 
 class CouponStrip extends StatelessWidget {

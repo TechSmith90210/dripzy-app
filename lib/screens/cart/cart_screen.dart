@@ -1,8 +1,8 @@
 import 'package:dripzy/blocs/cart/cart_event.dart';
 import 'package:dripzy/blocs/cart/cart_state.dart';
-import 'package:dripzy/pages/cart/dialogs/cart_removal_dialog.dart';
-import 'package:dripzy/pages/cart/widgets/cart_product_item.dart';
-import 'package:dripzy/pages/cart/widgets/checkout_bar.dart';
+import 'package:dripzy/screens/cart/dialogs/cart_removal_dialog.dart';
+import 'package:dripzy/screens/cart/widgets/cart_product_item.dart';
+import 'package:dripzy/screens/cart/widgets/checkout_bar.dart';
 import 'package:dripzy/widgets/custom_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,4 +1,4 @@
-import 'package:dripzy/pages/cart/widgets/quantity_row.dart';
+import 'package:dripzy/screens/cart/widgets/quantity_row.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 class CartProductItem extends StatelessWidget {

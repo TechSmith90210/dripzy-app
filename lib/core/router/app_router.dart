@@ -1,13 +1,15 @@
-import 'package:dripzy/pages/auth/register_screen.dart';
-import 'package:dripzy/pages/product/product_screen.dart';
+import 'package:dripzy/screens/auth/register_screen.dart';
+import 'package:dripzy/screens/product/product_screen.dart';
+import 'package:dripzy/screens/profile/profile_screen.dart';
+import 'package:dripzy/screens/wishlist/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../pages/auth/get_started_screen.dart';
-import '../../pages/auth/login_screen.dart';
-import '../../pages/cart/cart_screen.dart';
-import '../../pages/home/home_screen.dart';
-import '../../pages/splash/splash_screen.dart';
+import '../../screens/auth/get_started_screen.dart';
+import '../../screens/auth/login_screen.dart';
+import '../../screens/cart/cart_screen.dart';
+import '../../screens/home/home_screen.dart';
+import '../../screens/splash/splash_screen.dart';
 import 'routes.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -92,6 +94,22 @@ final appRouter = GoRouter(
       name: AppRoutes.cartName,
       builder: (context, state) {
         return CartScreen();
+      },
+    ),
+
+    GoRoute(
+      path: AppRoutes.wishlist,
+      name: AppRoutes.wishlistName,
+      builder: (context, state) {
+        return WishlistScreen();
+      },
+    ),
+
+    GoRoute(
+      path: AppRoutes.profile,
+      name: AppRoutes.profileName,
+      builder: (context, state) {
+        return ProfileScreen();
       },
     ),
   ],
