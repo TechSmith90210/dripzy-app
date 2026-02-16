@@ -1,6 +1,7 @@
 import 'package:dripzy/core/api/global_api_client.dart';
 import 'package:dripzy/core/router/app_router.dart';
 import 'package:dripzy/core/router/routes.dart';
+import 'package:dripzy/core/utils/auth_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterRequested>(_handleRegister);
     on<LoginRequested>(_handleLogin);
     on<UserDataRequested>(_handleGetUserData);
+    on<LogoutRequested>(_handleLogout);
   }
 
   // ---------------- Private Methods ----------------
@@ -106,5 +108,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
     }
+  }
+
+  Future<void> _handleLogout(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    ApiClient().clearAccessToken();
+    AuthProvider().clearUser();
+    AuthStorage.clearAccessToken();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access-token');
+
+    navigatorKey.currentContext?.goNamed(AppRoutes.getStartedName);
+    emit(AuthSuccess(message: "Logged out successfully"));
   }
 }

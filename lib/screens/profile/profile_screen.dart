@@ -1,6 +1,9 @@
+import 'package:dripzy/blocs/auth/auth_bloc.dart';
+import 'package:dripzy/blocs/auth/auth_event.dart';
 import 'package:dripzy/core/router/routes.dart';
 import 'package:dripzy/models/user/user_model.dart';
 import 'package:dripzy/providers/auth_provider.dart';
+import 'package:dripzy/widgets/dialogs/logout_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -107,7 +110,15 @@ class ProfileScreen extends StatelessWidget {
         _tile(context, Icons.location_on_outlined, "Addresses", () {}),
         _tile(context, Icons.support_agent_outlined, "Help & Support", () {}),
         const SizedBox(height: 8),
-        _tile(context, Icons.logout, "Logout", () {}, danger: true),
+        _tile(context, Icons.logout, "Logout", () {
+          showLogoutDialog(
+            context,
+            onLogoutClick: () {
+              context.read<AuthBloc>().add(LogoutRequested());
+            },
+            onCancelClick: () => context.pop(),
+          );
+        }, danger: true),
       ],
     );
   }

@@ -1,5 +1,3 @@
-import 'package:dripzy/blocs/cart/cart_bloc.dart';
-import 'package:dripzy/blocs/cart/cart_event.dart';
 import 'package:dripzy/blocs/wishlist/wishlist_bloc.dart';
 import 'package:dripzy/blocs/wishlist/wishlist_event.dart';
 import 'package:dripzy/blocs/wishlist/wishlist_state.dart';
