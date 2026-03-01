@@ -1,3 +1,6 @@
+import 'package:dripzy/models/address/address_model.dart';
+import 'package:dripzy/screens/address/address_form_screen.dart';
+import 'package:dripzy/screens/address/address_screen.dart';
 import 'package:dripzy/screens/auth/register_screen.dart';
 import 'package:dripzy/screens/product/product_screen.dart';
 import 'package:dripzy/screens/profile/profile_screen.dart';
@@ -110,6 +113,23 @@ final appRouter = GoRouter(
       name: AppRoutes.profileName,
       builder: (context, state) {
         return ProfileScreen();
+      },
+    ),
+
+    GoRoute(
+      path: AppRoutes.address,
+      name: AppRoutes.addressName,
+      builder: (context, state) {
+        return AddressScreen();
+      },
+    ),
+
+    GoRoute(
+      path: AppRoutes.addressForm,
+      name: AppRoutes.addressFormName,
+      builder: (context, state) {
+        final extra = state.extra as Address?;
+        return AddressFormPage(address: extra);
       },
     ),
   ],

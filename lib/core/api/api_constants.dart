@@ -26,4 +26,11 @@ class ApiConstants {
   static const String getWishlist = "/wishlist/";
   static const String addToWishlist = "/wishlist/";
   static String removeFromWishlist(String productId) => "/wishlist/$productId";
+
+  //address routes
+  static const String getAllAddresses = "/address";
+  static const String addAddress = "/address";
+  static String updateAddress(String id) => "/address/$id";
+  static String deleteAddress(String id) => "/address/$id";
+  static String setDefaultAddress(String id) => "/address/$id/default";
 }

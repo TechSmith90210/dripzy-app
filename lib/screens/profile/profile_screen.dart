@@ -107,8 +107,10 @@ class ProfileScreen extends StatelessWidget {
           context.push(AppRoutes.wishlist);
         }),
         _tile(context, Icons.inventory_2_outlined, "Orders", () {}),
-        _tile(context, Icons.location_on_outlined, "Addresses", () {}),
-        _tile(context, Icons.support_agent_outlined, "Help & Support", () {}),
+        _tile(context, Icons.location_on_outlined, "Addresses", () {
+          context.push(AppRoutes.address);
+        }),
+        // _tile(context, Icons.support_agent_outlined, "Help & Support", () {}),
         const SizedBox(height: 8),
         _tile(context, Icons.logout, "Logout", () {
           showLogoutDialog(

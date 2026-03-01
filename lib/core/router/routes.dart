@@ -10,6 +10,8 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String profile = '/profile';
   static const String wishlist = '/wishlist';
+  static const String address = '/address';
+  static const String addressForm = '/addressForm';
 
   // names
   static const String splashName = 'splash';
@@ -22,4 +24,6 @@ class AppRoutes {
   static const String cartName = 'cart';
   static const String profileName = 'profile';
   static const String wishlistName = 'wishlist';
+  static const String addressName = 'address';
+  static const String addressFormName = 'addressForm';
 }

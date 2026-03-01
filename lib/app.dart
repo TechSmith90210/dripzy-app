@@ -1,14 +1,18 @@
+import 'package:dripzy/blocs/address/address_bloc.dart';
 import 'package:dripzy/blocs/home/home_bloc.dart';
 import 'package:dripzy/blocs/product/product_bloc.dart';
 import 'package:dripzy/blocs/wishlist/wishlist_bloc.dart';
+import 'package:dripzy/core/api/global_api_client.dart';
 import 'package:dripzy/core/router/app_router.dart';
 import 'package:dripzy/core/theme/app_theme.dart';
 import 'package:dripzy/blocs/auth/auth_bloc.dart';
 import 'package:dripzy/providers/auth_provider.dart';
+import 'package:dripzy/repositories/address_repository.dart';
 import 'package:dripzy/repositories/auth_repository.dart';
 import 'package:dripzy/repositories/cart_repository.dart';
 import 'package:dripzy/repositories/product_repository.dart';
 import 'package:dripzy/repositories/wishlist_repository.dart';
+import 'package:dripzy/services/address_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +47,9 @@ class DripzyApp extends StatelessWidget {
           ),
           BlocProvider<WishlistBloc>(
             create: (context) => WishlistBloc(repository: WishlistRepository()),
+          ),
+          BlocProvider<AddressBloc>(
+            create: (context) => AddressBloc(repository: AddressRepository(AddressService(ApiClient()))),
           ),
         ],
         child: Builder(
