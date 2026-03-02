@@ -17,38 +17,44 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  List<Address> addresses = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchAddresses();
+  }
 
-  void _getAddresses() async {
+  void _fetchAddresses() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AddressBloc>().add(GetAddresses());
     });
   }
 
-  void _onTapAddress([Address? address]) {
-    context.push(AppRoutes.addressForm, extra: address);
+  Future<void> _onRefresh() async {
+    context.read<AddressBloc>().add(GetAddresses());
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _getAddresses();
+  void _onTapAddress([Address? address]) async {
+    // Await the push so we refresh when coming back
+    await context.push(AppRoutes.addressForm, extra: address);
+    if (mounted) _fetchAddresses();
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final color = theme.colorScheme;
 
     return Scaffold(
+      backgroundColor: color.surface, // Clean, modern background
       appBar: AppBar(
-        title: const Text("Addresses"),
+        title: const Text("My Addresses"),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
         elevation: 0,
-        titleTextStyle: TextStyle(
-          color: color.primary,
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
+        backgroundColor: color.surface,
+        surfaceTintColor: Colors.transparent,
+        titleTextStyle: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: color.onSurface,
         ),
       ),
       body: BlocConsumer<AddressBloc, AddressState>(
@@ -58,41 +64,88 @@ class _AddressScreenState extends State<AddressScreen> {
           }
         },
         builder: (context, state) {
-          if (state.status == AddressStatus.loading) {
+          if (state.status == AddressStatus.loading &&
+              state.addresses.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state.addresses.isNotEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  final address = state.addresses[index];
-                  return AddressTileWidget(
+          if (state.addresses.isEmpty) {
+            return _buildEmptyState(color);
+          }
+
+          return RefreshIndicator(
+            onRefresh: _onRefresh,
+            displacement: 20,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              itemCount: state.addresses.length,
+              itemBuilder: (context, index) {
+                final address = state.addresses[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: AddressTileWidget(
                     address: address,
                     onTap: () => _onTapAddress(address),
                     isSelected: state.selectedId == address.id,
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: state.addresses.length,
-              ),
-            );
-          }
-
-          return Center(
-            child: Text(
-              "No Addresses Yet, Add one",
-              style: TextStyle(color: color.primary),
+                  ),
+                );
+              },
             ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _onTapAddress(),
-        child: const Icon(Icons.add, color: Colors.white),
+        elevation: 2,
+        backgroundColor: color.tertiary,
+        icon: Icon(Icons.add_rounded, color: color.onTertiary),
+        label: Text(
+          "Add New",
+          style: TextStyle(
+            color: color.onTertiary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ColorScheme color) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: color.primaryContainer.withOpacity(0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.location_on_outlined,
+              size: 48,
+              color: color.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "No Addresses Saved",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              "Add a delivery address to get started with your orders.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: color.outline),
+            ),
+          ),
+        ],
       ),
     );
   }

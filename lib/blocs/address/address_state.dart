@@ -1,13 +1,10 @@
+import 'package:equatable/equatable.dart'; // 1. Add this import
 import 'package:dripzy/models/address/address_model.dart';
 
-enum AddressStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum AddressStatus { initial, loading, success, failure }
 
-class AddressState {
+// 2. Extend Equatable
+class AddressState extends Equatable {
   final AddressStatus status;
   final List<Address> addresses;
   final String? error;
@@ -33,4 +30,8 @@ class AddressState {
       selectedId: selectedId ?? this.selectedId,
     );
   }
+
+  // 3. 🟢 THIS IS THE KEY: Include all fields here
+  @override
+  List<Object?> get props => [status, addresses, error, selectedId];
 }

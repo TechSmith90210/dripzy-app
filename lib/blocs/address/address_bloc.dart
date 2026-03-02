@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dripzy/models/address/address_model.dart';
 import 'package:dripzy/repositories/address_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,14 +51,31 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
     final result = await _addressRepository.addAddress(event.address);
 
     result.when(
-      success: (address) {
-        final updated = List<Address>.from(state.addresses)..add(address);
+      success: (newAddress) {
+        // 1. Prepare the existing list by toggling off defaults if the new one is default
+        final List<Address> updatedList = state.addresses.map((existing) {
+          // If the new address is default, all existing ones must become false
+          return newAddress.isDefault
+              ? existing.copyWith(isDefault: false)
+              : existing;
+        }).toList();
 
+        // 2. Add the new address to the prepared list
+        updatedList.add(newAddress);
+
+        updatedList.sort(
+          (a, b) {
+            if(a.isDefault) return -1;
+            if(b.isDefault) return 1;
+            return 0;
+          },
+        );
+
+        // 3. Emit success with the NEW list instance
         emit(state.copyWith(
           status: AddressStatus.success,
-          addresses: updated,
+          addresses: updatedList,
         ));
-        emit(state.copyWith(status: AddressStatus.initial));
       },
       failure: (message) =>
           emit(state.copyWith(status: AddressStatus.failure, error: message)),

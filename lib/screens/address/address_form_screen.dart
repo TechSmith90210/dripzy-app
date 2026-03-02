@@ -3,8 +3,10 @@ import 'package:dripzy/blocs/address/address_event.dart';
 import 'package:dripzy/blocs/address/address_state.dart';
 import 'package:dripzy/models/address/address_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 
 class AddressFormPage extends StatefulWidget {
   final Address? address;
@@ -34,7 +36,14 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
     labelController = TextEditingController(text: a?.label ?? '');
     receiverController = TextEditingController(text: a?.receiverName ?? '');
-    phoneController = TextEditingController(text: a?.phone ?? '');
+
+    // Clean phone number: strip +91 if it exists so prefixText handles it visually
+    String initialPhone = a?.phone ?? '';
+    if (initialPhone.contains('+91')) {
+      initialPhone = initialPhone.replaceAll('+91', '').trim();
+    }
+    phoneController = TextEditingController(text: initialPhone);
+
     line1Controller = TextEditingController(text: a?.line1 ?? '');
     line2Controller = TextEditingController(text: a?.line2 ?? '');
     postalController = TextEditingController(text: a?.postalCode ?? '');
@@ -63,6 +72,7 @@ class _AddressFormPageState extends State<AddressFormPage> {
       if (oldVal != newVal) data[key] = newVal;
     }
 
+    // Keys match the snake_case expected by your Node.js backend
     put('label', old.label, labelController.text.trim());
     put('receiver_name', old.receiverName, _nullable(receiverController));
     put('phone', old.phone, phoneController.text.trim());
@@ -81,16 +91,14 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
     if (isEditing) {
       final updateData = _buildUpdateData(widget.address!);
-
       if (updateData.isEmpty) {
         context.pop();
         return;
       }
 
-      bloc.add(UpdateAddress(
-        addressId: widget.address!.id,
-        updateData: updateData,
-      ));
+      bloc.add(
+        UpdateAddress(addressId: widget.address!.id, updateData: updateData),
+      );
     } else {
       final address = Address(
         id: '',
@@ -103,9 +111,45 @@ class _AddressFormPageState extends State<AddressFormPage> {
         line2: _nullable(line2Controller),
         postalCode: postalController.text.trim(),
       );
+      debugPrint("[_submit]$address");
 
       bloc.add(AddAddress(address: address));
+      context.pop();
     }
+  }
+
+  void _onDelete(ColorScheme color) async {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              "Delete Address",
+              style: TextStyle(color: color.primary),
+            ),
+            content: Text(
+              "Are you sure you want to delete this address?",
+              style: TextStyle(color: color.primary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: Text("Cancel", style: TextStyle(color: color.primary)),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AddressBloc>().add(
+                    DeleteAddress(addressId: widget.address!.id),
+                  );
+
+                  context.pop();
+                  context.pop();
+                },
+                child: Text("Delete", style: TextStyle(color: color.error)),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -120,17 +164,25 @@ class _AddressFormPageState extends State<AddressFormPage> {
         elevation: 0,
         titleTextStyle: TextStyle(
           color: color.primary,
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: FontWeight.w700,
         ),
+        actions: [
+          if (widget.address != null)
+            IconButton(
+              onPressed: () => _onDelete(color),
+              icon: Icon(IconsaxPlusBroken.trash),
+            ),
+        ],
       ),
       body: BlocListener<AddressBloc, AddressState>(
         listenWhen: (p, c) => p.status != c.status,
         listener: (context, state) {
-          if (state.status == AddressStatus.success) context.pop();
-
+          // if (state.status == AddressStatus.success) context.pop();
           if (state.status == AddressStatus.failure && state.error != null) {
-            print("error is ${state.error}");
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.error!)));
           }
         },
         child: BlocBuilder<AddressBloc, AddressState>(
@@ -139,41 +191,119 @@ class _AddressFormPageState extends State<AddressFormPage> {
 
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
                       Expanded(
                         child: ListView(
+                          physics: const BouncingScrollPhysics(),
                           children: [
-                            _field("Label", labelController),
-                            _field("Receiver Name (optional)", receiverController, required: false),
-                            _field("Phone", phoneController, keyboard: TextInputType.phone),
-                            _field("Address Line 1", line1Controller),
-                            _field("Address Line 2 (optional)", line2Controller, required: false),
-                            _field("Postal Code", postalController, keyboard: TextInputType.number),
-                            const SizedBox(height: 12),
-                            SwitchListTile(
-                              contentPadding: EdgeInsets.zero,
-                              value: isDefault,
-                              title: const Text("Set as default"),
-                              onChanged: loading ? null : (v) => setState(() => isDefault = v),
+                            const SizedBox(height: 10),
+                            _field(
+                              "Label",
+                              labelController,
+                              hint: "Home / Office / Gym",
+                            ),
+                            _field(
+                              "Receiver Name (optional)",
+                              receiverController,
+                              required: false,
+                              hint: "Who will receive the package?",
+                            ),
+                            _field(
+                              "Phone Number",
+                              phoneController,
+                              keyboard: TextInputType.phone,
+                              prefix: "+91 ",
+                              maxLength: 10,
+                              hint: "10-digit mobile number",
+                            ),
+                            _field(
+                              "Address Line 1",
+                              line1Controller,
+                              hint: "Flat No, Building, Street",
+                            ),
+                            _field(
+                              "Address Line 2 (optional)",
+                              line2Controller,
+                              required: false,
+                              hint: "Landmark / Area",
+                            ),
+                            _field(
+                              "Postal Code",
+                              postalController,
+                              keyboard: TextInputType.number,
+                              maxLength: 6,
+                              hint: "6-digit PIN",
+                            ),
+
+                            // Modern Default Toggle
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: color.surfaceVariant.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SwitchListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                value: isDefault,
+                                title: const Text(
+                                  "Set as default address",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                onChanged:
+                                    loading
+                                        ? null
+                                        : (v) => setState(() => isDefault = v),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: loading ? null : _submit,
-                          child: loading
-                              ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                              : Text(isEditing ? "Update Address" : "Save Address"),
+
+                      // Bottom Action Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: color.primary,
+                              foregroundColor: color.onPrimary,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: loading ? null : _submit,
+                            child:
+                                loading
+                                    ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                    : Text(
+                                      isEditing
+                                          ? "Update Address"
+                                          : "Save Address",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                          ),
                         ),
                       ),
                     ],
@@ -188,30 +318,73 @@ class _AddressFormPageState extends State<AddressFormPage> {
   }
 
   Widget _field(
-      String label,
-      TextEditingController controller, {
-        bool required = true,
-        TextInputType keyboard = TextInputType.text,
-      }) {
+    String label,
+    TextEditingController controller, {
+    bool required = true,
+    TextInputType keyboard = TextInputType.text,
+    String? prefix,
+    int? maxLength,
+    String? hint,
+  }) {
     final color = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
-        style: TextStyle(color: color.primary),
+        style: TextStyle(
+          color: color.primary,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
         controller: controller,
         keyboardType: keyboard,
+        inputFormatters: [
+          if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+          if (keyboard == TextInputType.number ||
+              keyboard == TextInputType.phone)
+            FilteringTextInputFormatter.digitsOnly,
+        ],
         decoration: InputDecoration(
           labelText: label,
+          hintText: hint,
+          hintStyle: TextStyle(
+            color: color.outline.withOpacity(0.4),
+            fontSize: 14,
+          ),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          prefixText: prefix,
+          prefixStyle: TextStyle(
+            color: color.primary,
+            fontWeight: FontWeight.bold,
+          ),
           filled: true,
+          fillColor: color.surfaceVariant.withOpacity(0.2),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: color.outlineVariant.withOpacity(0.3),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: color.primary, width: 1.5),
+          ),
+          errorStyle: const TextStyle(fontSize: 12),
         ),
         validator: (v) {
           if (!required) return null;
-          if (v == null || v.trim().isEmpty) return "$label required";
+          if (v == null || v.trim().isEmpty) return "$label is required";
+          if (maxLength != null && v.trim().length != maxLength) {
+            return "Must be $maxLength digits";
+          }
           return null;
         },
       ),
