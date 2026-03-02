@@ -51,6 +51,7 @@ dependencies:
   carousel_slider: ^5.1.1
   collection:
   pretty_dio_logger: ^1.4.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -69,16 +70,26 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
 
   # To add assets to your application, add an assets section, like this:
   assets:
      - .env
      - assets/
      - assets/get_started/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/dripzy_app_logo.png" # Update this to your actual logo path
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF" # Your brand color (e.g., #000000 for Dripzy)
+  adaptive_icon_foreground: "assets/dripzy_app_logo.png" # Usually the same as image_path
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
