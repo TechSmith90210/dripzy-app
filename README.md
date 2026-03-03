@@ -5,15 +5,15 @@ Dripzy is a high-end E-commerce mobile application built with Flutter, focusing 
 ## Visuals
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-get-started.png" width="32%" alt="Get Started" />
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-login.png" width="32%" alt="Login" />
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-home.png" width="32%" alt="Home" />
+  <img src="assets/screenshots/dripzy-get-started.png" width="32%" />
+  <img src="assets/screenshots/dripzy-login.png" width="32%" />
+  <img src="assets/screenshots/dripzy-home.png" width="32%" />
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-product.png" width="32%" alt="Product Details" />
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-cart.png" width="32%" alt="Cart" />
-  <img src="https://raw.githubusercontent.com/TechSmith90210/dripzy/main/assets/screenshots/dripzy-wishlist.png" width="32%" alt="Wishlist" />
+  <img src="assets/screenshots/dripzy-product.png" width="32%" alt="Product Details" />
+  <img src="assets/screenshots/dripzy-cart.png" width="32%" alt="Cart" />
+  <img src="assets/screenshots/dripzy-wishlist.png" width="32%" alt="Wishlist" />
 </p>
 
 ## Core Features
