@@ -44,19 +44,36 @@ class AuthService {
       );
 
       final data = response.data as Map<String, dynamic>;
-
-      final token = data['token'] as String?;
-      final user = data['user'] != null ? User.fromJson(data['user']) : null;
-
-      return (token: token, user: user);
+      return (
+      token: data['token'] as String?,
+      user: data['user'] != null ? User.fromJson(data['user']) : null,
+      );
     } on DioException catch (e) {
-      String errorMessage = 'Network error';
-      if (e.response != null && e.response!.data is Map<String, dynamic>) {
-        errorMessage =
-            (e.response!.data as Map<String, dynamic>)['message'] ??
-            'Something went wrong';
+      // 1. Check if the backend sent a specific error message (e.g., "Invalid Password")
+      final dynamic backendMessage = e.response?.data is Map
+          ? e.response?.data['message']
+          : null;
+
+      // 2. Determine the best message based on the error type
+      String errorMessage;
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.receiveTimeout:
+          errorMessage = "Server is waking up, please try again in a moment.";
+          break;
+        case DioExceptionType.badResponse:
+          errorMessage = backendMessage ?? "Invalid credentials (Error ${e.response?.statusCode})";
+          break;
+        case DioExceptionType.connectionError:
+          errorMessage = "No internet connection detected.";
+          break;
+        default:
+          errorMessage = backendMessage ?? "Connection failed. Please try again.";
       }
+
       throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception("An unexpected error occurred.");
     }
   }
 
