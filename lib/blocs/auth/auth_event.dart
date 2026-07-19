@@ -44,3 +44,7 @@ class UserDataRequested extends AuthEvent {
   @override
   List<Object?> get props => [authToken];
 }
+
+//google sign-in event
+class GoogleSignInRequested extends AuthEvent {}
+

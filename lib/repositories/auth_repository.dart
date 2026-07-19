@@ -34,4 +34,12 @@ class AuthRepository {
     final result = await _authService.getUserData(accessToken: accessToken);
     return result;
   }
+
+  //google login
+  Future<({String? token, User? user})> googleLogin({
+    required String idToken,
+  }) async {
+    final result = await _authService.googleLogin(idToken: idToken);
+    return result;
+  }
 }
