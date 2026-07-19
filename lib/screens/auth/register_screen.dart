@@ -118,8 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: EdgeInsets.all(20),
-              // height: isSmallScreen ? height/2 : height / 1.8,
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 24, bottom: 40),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: color.surface,
@@ -230,6 +229,89 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: isLoading ? "Registering..." : "Register",
                           onTap:
                               () => isLoading ? null : onRegisterTap(context),
+                        );
+                      },
+                    ),
+
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "OR",
+                            style: TextStyle(
+                              color: color.primary.withValues(alpha: 0.4),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                      ],
+                    ),
+
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return InkWell(
+                          onTap: isLoading
+                              ? null
+                              : () => context
+                                  .read<AuthBloc>()
+                                  .add(GoogleSignInRequested()),
+                          borderRadius: BorderRadius.circular(100),
+                          child: Container(
+                            height: 52,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: color.primary.withValues(alpha: 0.15),
+                              ),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (isLoading) ...[
+                                  SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(color.primary),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: color.primary.withValues(alpha: 0.05),
+                                    ),
+                                    child: Text(
+                                      "G",
+                                      style: TextStyle(
+                                        color: color.primary,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(width: 12),
+                                Text(
+                                  isLoading ? "Please wait..." : "Continue with Google",
+                                  style: TextStyle(
+                                    color: color.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),
