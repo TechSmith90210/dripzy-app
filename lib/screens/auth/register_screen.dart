@@ -233,6 +233,78 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       },
                     ),
+
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "OR",
+                            style: TextStyle(
+                              color: color.primary.withValues(alpha: 0.4),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                      ],
+                    ),
+
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return InkWell(
+                          onTap: isLoading
+                              ? null
+                              : () => context
+                                  .read<AuthBloc>()
+                                  .add(GoogleSignInRequested()),
+                          borderRadius: BorderRadius.circular(100),
+                          child: Container(
+                            height: 52,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: color.primary.withValues(alpha: 0.15),
+                              ),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: color.primary.withValues(alpha: 0.05),
+                                  ),
+                                  child: Text(
+                                    "G",
+                                    style: TextStyle(
+                                      color: color.primary,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  "Continue with Google",
+                                  style: TextStyle(
+                                    color: color.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
