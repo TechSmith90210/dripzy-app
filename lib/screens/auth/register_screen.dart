@@ -118,8 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: EdgeInsets.all(20),
-              // height: isSmallScreen ? height/2 : height / 1.8,
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 24, bottom: 40),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: color.surface,
