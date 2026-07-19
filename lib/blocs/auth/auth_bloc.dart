@@ -175,7 +175,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       ApiClient().setAccessToken(response.token!);
       emit(AuthSuccess(message: "User logged in successfully with Google"));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print("Google Sign-In Error: $e");
+      print(stackTrace);
       emit(AuthFailure(message: e.toString()));
     }
   }
