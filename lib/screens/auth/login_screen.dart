@@ -63,19 +63,18 @@ class _LoginScreenState extends State<LoginScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.all(20),
-                height: MediaQuery.of(context).size.height / 2.5,
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 24, bottom: 40),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: color.surface,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
                   ),
                 ),
                 child: Column(
-                  spacing: 20,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  spacing: 16,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
@@ -129,6 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       showSuffixIcon: true,
                     ),
 
+                    const SizedBox(height: 4),
+
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         final isLoading = state is AuthLoading;
@@ -136,6 +137,78 @@ class _LoginScreenState extends State<LoginScreen> {
                           bgColor: color.primary,
                           text: isLoading ? "Logging in..." : "Login",
                           onTap: isLoading ? () {} : () => onLoginTap(),
+                        );
+                      },
+                    ),
+
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "OR",
+                            style: TextStyle(
+                              color: color.primary.withValues(alpha: 0.4),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: color.primary.withValues(alpha: 0.1))),
+                      ],
+                    ),
+
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return InkWell(
+                          onTap: isLoading
+                              ? null
+                              : () => context
+                                  .read<AuthBloc>()
+                                  .add(GoogleSignInRequested()),
+                          borderRadius: BorderRadius.circular(100),
+                          child: Container(
+                            height: 52,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: color.primary.withValues(alpha: 0.15),
+                              ),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: color.primary.withValues(alpha: 0.05),
+                                  ),
+                                  child: Text(
+                                    "G",
+                                    style: TextStyle(
+                                      color: color.primary,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  "Continue with Google",
+                                  style: TextStyle(
+                                    color: color.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),
