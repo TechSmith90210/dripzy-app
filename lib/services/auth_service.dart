@@ -101,4 +101,29 @@ class AuthService {
       throw Exception(e.response?.data['message'] ?? 'Network error');
     }
   }
+
+  Future<({String? token, User? user})> googleLogin({
+    required String idToken,
+  }) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.baseUrl + ApiConstants.authGoogle,
+        data: {"idToken": idToken},
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      return (
+        token: data['token'] as String?,
+        user: data['user'] != null ? User.fromJson(data['user']) : null,
+      );
+    } on DioException catch (e) {
+      String errorMessage = 'Google Login failed';
+      if (e.response != null && e.response!.data is Map<String, dynamic>) {
+        errorMessage =
+            (e.response!.data as Map<String, dynamic>)['message'] ??
+            'Something went wrong';
+      }
+      throw Exception(errorMessage);
+    }
+  }
 }
