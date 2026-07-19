@@ -274,24 +274,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: color.primary.withValues(alpha: 0.05),
-                                  ),
-                                  child: Text(
-                                    "G",
-                                    style: TextStyle(
-                                      color: color.primary,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16,
+                                if (isLoading) ...[
+                                  SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(color.primary),
                                     ),
                                   ),
-                                ),
+                                ] else ...[
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: color.primary.withValues(alpha: 0.05),
+                                    ),
+                                    child: Text(
+                                      "G",
+                                      style: TextStyle(
+                                        color: color.primary,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                                 const SizedBox(width: 12),
                                 Text(
-                                  "Continue with Google",
+                                  isLoading ? "Please wait..." : "Continue with Google",
                                   style: TextStyle(
                                     color: color.primary,
                                     fontWeight: FontWeight.bold,
