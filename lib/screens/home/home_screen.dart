@@ -51,17 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: const Text('DRIPZY'),
                   titleTextStyle: TextStyle(
                     color: color.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                    letterSpacing: 4,
                   ),
-                  backgroundColor: Theme.of(context).colorScheme.background,
+                  backgroundColor: color.surface,
                   scrolledUnderElevation: 0,
-                  floating: true, // appears when you scroll up
-                  snap: true, // smooth snap effect
+                  floating: true,
+                  snap: true,
                   centerTitle: true,
                   leading: IconButton(
                     onPressed: () {},
-                    icon: const Icon(IconsaxPlusBroken.menu_1),
+                    icon: const Icon(IconsaxPlusBroken.menu_1, size: 22),
                   ),
                   actions: [
                     BlocBuilder<CartBloc, CartState>(
@@ -76,13 +77,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             context.pushNamed(AppRoutes.cartName);
                           },
-                          icon: const Icon(IconsaxPlusBold.shopping_bag),
+                          icon: const Icon(IconsaxPlusBroken.shopping_bag, size: 22),
                         );
 
-                        // Show badge only if count > 0
                         if (itemCount > 0) {
                           return Badge(
-                            label: Text(itemCount.toString()),
+                            label: Text(
+                              itemCount.toString(),
+                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                            backgroundColor: color.primary,
+                            textColor: color.surface,
                             child: cartIcon,
                           );
                         }
@@ -93,11 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     IconButton(
                       onPressed: () {
-                        //go to profile page
                         context.push(AppRoutes.profile);
                       },
-                      icon: const Icon(IconsaxPlusBold.profile_circle),
+                      icon: const Icon(IconsaxPlusBroken.profile_circle, size: 22),
                     ),
+                    const SizedBox(width: 8),
                   ],
                 ),
                 //header text
